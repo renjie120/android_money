@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string-array name="sorttype">
+		<item>早餐</item>
+		<item>中饭</item>
+		<item>晚饭</item>
+		<item>聚餐请客</item>
+		<item>地鐵</item>
+		<item>超市</item>
+		<item>服装</item>
+		<item>网购</item>
+		<item>话费</item> 
+		<item>交通</item>
+		<item>飞机</item>
+		<item>汽车公交</item>
+		<item>火车票</item>
+		<item>文化娱乐</item>
+		<item>春节</item>
+		<item>孝敬父母</item>
+		<item>其他开支</item>
+		<item>人情往来</item>
+		<item>卫生医疗费</item>
+		<item>收入</item>
+		<item>奖金</item>
+		<item>工资</item>
+		<item>报销差补</item>
+	</string-array>
+	<string-array name="diaryType">
+		<item>不错</item>
+		<item>平淡</item>
+		<item>不爽</item>
+	</string-array>
+	<array name="statisticsType">
+		<item>查看支出统计图</item>
+		<item>查看收入统计图</item>
+	</array>
+
+	<string-array name="ggtitle1">
+		<item>工作7點半以前起床</item>
+		<item>工作懶床在響鈴兩次起床</item>
+		<item>遲到</item>
+	</string-array>
+
+	<string-array name="ggtitle4"> 
+		<item>得到上級認可</item>
+		<item>得到同事認可</item>
+		<item>得到同事批評</item>
+		<item>與同事吵架</item>
+		<item>讚揚同事</item>
+		<item>不服同事</item>
+		<item>上級批評</item>
+	</string-array>
+
+	<string-array name="ggtitle6">
+		<item>工作瞌睡</item>
+		<item>頭暈狀態不佳</item>
+		<item>精神饱满</item>
+	</string-array>
+
+	<string-array name="ggtitle7">
+		<item>工作壓力大做不完</item>
+		<item>工作飽和度高,任務準時完成</item>
+		<item>工作完深入研究知識</item>
+	</string-array>
+
+	<string-array name="ggtitle8">
+		<item>未选择</item>
+		<item>加班到7點半</item>
+		<item>加班到8點半</item>
+		<item>加班超過8點半</item>
+	</string-array>
+
+	<string-array name="ggtitle9">
+		<item>未选择</item>
+		<item>工作回繼續學習1小時</item>
+		<item>工作回繼續學習2小時</item>
+		<item>工作回繼續學習3小時</item>
+	</string-array>
+
+	<string-array name="ggtitle10">
+		<item>未选择</item>
+		<item>工作回沒有掛qq</item>
+		<item>工作回有掛qq</item>
+	</string-array>
+
+	<string-array name="ggtitle_a10">
+		<item>未选择</item>
+		<item>上網半小時以內</item>
+		<item>上網半小時到1小時</item>
+		<item>上網1小時以上</item>
+	</string-array>
+
+	<string-array name="ggtitle_b10"> 
+		<item>大过一次</item>
+		<item>瀏覽非財經類新聞</item>
+		<item>瀏覽財經或技術新聞</item>
+		<item>看娱乐網站</item>
+		<item>看電影</item>
+		<item>玩遊戲</item>
+		<item>手洗衣服</item>
+		<item>整理房間</item>
+		<item>亂扔東西</item>
+		<item>沒有洗就睡覺</item>
+	</string-array>
+
+	<string-array name="ggtitle11">
+		<item>未选择</item>
+		<item>11點半前睡覺</item>
+		<item>因學習而11點半以後睡覺</item>
+		<item>因娛樂而11點半以後睡覺</item>
+	</string-array>
+
+	<string-array name="ggtitle12">
+		<item>未选择</item>
+		<item>週末沒有學習</item>
+		<item>週末學習小於2小時</item>
+		<item>週末學習小於4小時</item>
+		<item>週末學習大於4小時</item>
+	</string-array>
+
+	<string-array name="ggtitle13">
+		<item>未选择</item>
+		<item>沒有看電影</item>
+		<item>看電影小於1小時</item>
+		<item>看電影1到2小時</item>
+		<item>看電影2到3小時</item>
+		<item>看電影超過3小時</item>
+	</string-array>
+
+	<string-array name="ggtitle14">
+		<item>未选择</item>
+		<item>週末一人逛街</item>
+		<item>週末與朋友一起</item>
+	</string-array>
+
+	<string-array name="ggtitle15">
+		<item>未选择</item>
+		<item>玩遊戲小於一小時</item>
+		<item>玩遊戲1到2小時</item>
+		<item>玩遊戲大於2小時</item>
+	</string-array>
+
+	<string-array name="ggtitle16">
+		<item>未选择</item>
+		<item>週末9點前起床</item>
+		<item>週末10點前起床</item>
+		<item>週末10點后起床</item>
+	</string-array>
+
+	<string-array name="ggtitle17"> 
+		<item>週末發佈技術貼</item>
+		<item>週末發佈博客</item>
+		<item>週末上網小於1小時</item>
+		<item>週末上網小於3小時</item>
+		<item>週末上網大於3小時</item>
+	</string-array>
+
+	<string-array name="ggtitle18"> 
+		<item>週末上網和朋友聊天</item>
+		<item>和其他親人打電話</item>
+		<item>和父母打電話</item>
+		<item>和朋友打電話</item>
+		<item>朋友給我打電話</item>
+		<item>主動與朋友聊天</item>
+		<item>主動招待朋友</item>
+	</string-array>
+
+	<string-array name="ggtitle19">
+		<item>未选择</item>
+		<item>週末被逼加班</item>
+		<item>週末主動加班</item>
+	</string-array>
+
+	<string-array name="ggtitle20">
+		<item>未选择</item>
+		<item>週末11點半睡覺</item>
+		<item>週末因學習12點后睡覺</item>
+		<item>週末娛樂到12點后睡覺</item>
+	</string-array>
+
+	<string-array name="ggtitle21">  
+		<item>大过一次</item> 
+		<item>手洗衣服</item>
+		<item>整理房間</item>
+		<item>亂扔東西</item>
+		<item>沒有洗就睡覺</item>
+		<item>買衣物感覺感覺滿意</item>
+		<item>買多餘的衣物後悔了</item>
+		<item>與朋友聚餐</item>
+	</string-array>
+</resources>

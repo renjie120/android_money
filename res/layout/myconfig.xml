@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget37"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/white"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/username"
+        style="@style/textstyle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/config_username" >
+    </TextView>
+
+    <EditText
+        android:id="@+id/untext"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="@null"
+        android:textSize="18sp" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/password"
+        style="@style/textstyle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/config_pasword" >
+    </TextView>
+
+    <EditText
+        android:id="@+id/passtext"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/config_please_pasword"
+        android:inputType="number"
+        android:textSize="18sp" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/config_inremoteIp"
+        style="@style/textstyle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/config_remoteIp" >
+    </TextView>
+
+    <EditText
+        android:id="@+id/remoteIp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/config_inremoteIp"
+        android:textSize="18sp" >
+    </EditText>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <CheckBox
+            android:id="@+id/showpass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+        </CheckBox>
+
+        <TextView
+            style="@style/textstyle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/config_show_pasword" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/returnbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/con_return" >
+        </Button>
+
+        <Button
+            android:id="@+id/savebtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/con_save" >
+        </Button>
+    </LinearLayout>
+
+</LinearLayout>

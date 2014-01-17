@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+    <style name="main_tab_bottom">
+        <item name="android:button">@null</item>
+        <item name="android:layout_marginTop">2.0dip</item>
+        <item name="android:textSize">10.0dip</item>
+        <item name="android:textColor">#ffffffff</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:background">@drawable/tab_btn_bg</item>
+        <item name="android:paddingTop">5.0dip</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:drawablePadding">2.0dip</item>
+        <item name="android:layout_weight">1.0</item>
+    </style>
+
+    <style name="textstyle1">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#FF0000</item>
+    </style>
+
+    <style name="redstyle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#FF0000</item>
+    </style>
+
+    <style name="gongguoitem">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">#FF0000</item>
+    </style>
+
+    <style name="titlestyle">
+        <item name="android:textSize">21sp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textColor">#FF0000</item>
+    </style>
+
+    <style name="timetext">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="Theme.Translucent" parent="@android:style/Theme.Translucent">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+</resources>

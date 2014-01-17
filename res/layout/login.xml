@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget37"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/menu_name"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_height"
+        android:background="@drawable/topnavbg"
+        android:gravity="center"
+        android:text="@string/app_name"
+        android:textColor="@drawable/white"
+        android:textSize="@dimen/titleTextSize" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_corner_gridview"
+        android:padding="10dp" >
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/username"
+                style="@style/textstyle1"
+                android:layout_width="@dimen/input_width"
+                android:layout_height="wrap_content"
+                android:text="@string/config_username"
+                android:textSize="@dimen/editTextSize" >
+            </TextView>
+
+            <EditText
+                android:id="@+id/usertext"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_width"
+                android:layout_weight="1"
+                android:hint="@string/default_user"
+                android:text="@string/dft_user"
+                android:textSize="@dimen/editTextSize" >
+            </EditText>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/password"
+                style="@style/textstyle1"
+                android:layout_width="@dimen/input_width"
+                android:layout_height="wrap_content"
+                android:text="@string/config_pasword"
+                android:textSize="@dimen/editTextSize" >
+            </TextView>
+
+            <EditText
+                android:id="@+id/passtext"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_width"
+                android:layout_weight="1"
+                android:hint="@string/default_pass"
+                android:inputType="textPassword"
+                android:text="1"
+                android:textSize="@dimen/editTextSize" >
+            </EditText>
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <CheckBox
+            android:id="@+id/showpass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp" >
+        </CheckBox>
+
+        <TextView
+            style="@style/textstyle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_width"
+            android:text="@string/config_show_pasword"
+            android:textSize="@dimen/editTextSize" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/loginbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:text="@string/login_sure"
+            android:textSize="@dimen/editTextSize" >
+        </Button>
+
+        <Button
+            android:id="@+id/quitbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_marginLeft="30dp"
+            android:text="@string/login_quit"
+            android:textSize="@dimen/editTextSize" >
+        </Button>
+    </LinearLayout>
+
+</LinearLayout>

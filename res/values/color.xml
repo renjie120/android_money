@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+    <drawable name="darkgray">#808080FF</drawable>
+    <drawable name="white">#FFFFFFFF</drawable>
+    <drawable name="red">#FF0000</drawable>
+
+    <dimen name="money_list_height">30dp</dimen>
+    <dimen name="input_width">80px</dimen>
+    <dimen name="margin_width">10px</dimen>
+    <dimen name="menu_height">45px</dimen>
+    <dimen name="title_btn_height">38px</dimen>
+    <dimen name="editTextSize">20sp</dimen>
+    <dimen name="titleTextSize">28sp</dimen>
+   <dimen name="title_btn_size">26sp</dimen>
+ 
+</resources>
