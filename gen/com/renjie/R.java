@@ -42,6 +42,7 @@ public final class R {
     public static final class attr {
     }
     public static final class dimen {
+        public static final int btn_size=0x7f060008;
         public static final int editTextSize=0x7f060005;
         public static final int input_width=0x7f060001;
         public static final int margin_width=0x7f060002;
@@ -50,7 +51,7 @@ public final class R {
         public static final int titleTextSize=0x7f060006;
         public static final int title_btn_height=0x7f060004;
         public static final int title_btn_size=0x7f060007;
-        public static final int title_btn_width=0x7f060008;
+        public static final int title_btn_width=0x7f060009;
     }
     public static final class drawable {
         public static final int bg=0x7f020000;

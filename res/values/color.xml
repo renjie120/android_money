@@ -12,6 +12,7 @@
     <dimen name="title_btn_height">38px</dimen>
     <dimen name="editTextSize">20sp</dimen>
     <dimen name="titleTextSize">28sp</dimen>
-   <dimen name="title_btn_size">26sp</dimen>
- 
+    <dimen name="title_btn_size">26sp</dimen>
+    <dimen name="btn_size">80dp</dimen>
+
 </resources>
