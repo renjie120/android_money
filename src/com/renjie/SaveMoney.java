@@ -48,9 +48,7 @@ import com.renjie.tool.MoneyDAO;
  * @author lsq
  * 
  */
-public class SaveMoney extends BaseActivity implements Runnable {
-	String remoteUrl_GAE = "http://myfirstgaejava.appspot.com/testServlet?method=addMoneysByPhone";
-	String remoteUrl = "http://REMOTEIP:1988/NewHibernateMoney/grid!datadistillFromPhone.action";
+public class SaveMoney extends BaseActivity  {
 	private EditText getMoneyText;
 	private EditText getMoneyDescText;
 	private Spinner sortSpinner;
@@ -59,9 +57,7 @@ public class SaveMoney extends BaseActivity implements Runnable {
 	private int myyear;
 	private int mymonth;
 	private int myday;
-	private final static int SUCCESS = 1;
 	Intent intent;
-	ProgressDialog myDialog = null;
 	static final int DATE_DIALOG_ID = 0;
 	private MoneyDAO myDb;
 
@@ -109,13 +105,7 @@ public class SaveMoney extends BaseActivity implements Runnable {
 			switch (arg2) {
 			case TOOLBAR_ITEM_SEE_ALL:
 				goToMoneyList();
-				break;
-			case TOOLBAR_ITEM_DELTELE_ALL:
-				deleteAll();
-				break;
-			case TOOLBAR_ITEM_SAVE_TO_SERVER:
-				saveToServer();
-				break;
+				break;  
 			}
 		}
 	};
@@ -127,23 +117,7 @@ public class SaveMoney extends BaseActivity implements Runnable {
 		SaveMoney.this.finish();
 	}
 
-	/**
-	 * 保存到远程的GAE服务端.
-	 */
-	private void saveToServer() {
-		String moneys = myDb.allMoney();
-
-		myDialog = new ProgressDialog(SaveMoney.this);
-		myDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);// 设置风格为圆形进度条
-		myDialog.setTitle(getStr(R.string.waitting));// 设置标题
-		myDialog.setMessage(getStr(R.string.sendingdata));
-		myDialog.setIndeterminate(false);// 设置进度条是否为不明确
-		myDialog.show();
-
-		// 启动多线程，进行服务器端的请求。
-		Thread thread = new Thread(SaveMoney.this);
-		thread.start();
-	}
+	
 
 	/**
 	 * 设置按钮的单击事件
@@ -164,7 +138,9 @@ public class SaveMoney extends BaseActivity implements Runnable {
 					return;
 				}
 				myDb.insert(money, time, moneyDesc, moneySort, "0");
-				alert(getText(R.string.save_success).toString());
+				Toast.makeText(getApplicationContext(),  getText(R.string.save_success).toString() ,
+					     Toast.LENGTH_SHORT).show(); 
+				//alert();
 				getMoneyText.setText("");
 				getMoneyDescText.setText("");
 			}
@@ -217,29 +193,7 @@ public class SaveMoney extends BaseActivity implements Runnable {
 				.append(mymonth + 1).append("-").append(myday).toString();
 	}
 
-	/**
-	 * 删除全部的收支信息
-	 */
-	private void deleteAll() {
-		new AlertDialog.Builder(this)
-				.setTitle(R.string.app_name)
-				.setMessage(R.string.delete_all_confirm)
-				.setNegativeButton(R.string.con_cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-
-							}
-						})
-				// 如果是确定退出就退出程序！
-				.setPositiveButton(R.string.con_ok,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-								myDb.deleteAll();
-							}
-						}).show();
-	}
+	
 
 	private void DisplayMoney(Cursor c) {
 		Toast.makeText(
@@ -282,20 +236,7 @@ public class SaveMoney extends BaseActivity implements Runnable {
 		}
 	}
 
-	private Handler handler = new Handler() {
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case SaveMoney.SUCCESS:
-				myDialog.dismiss();
-				alert(msg.obj.toString());
-				getMoneyText.setText("");
-				getMoneyDescText.setText("");
-				break;
-			}
-			super.handleMessage(msg);
-		}
-	};
-
+	
 	public static void main(String[] aa) {
 		HttpPost post = new HttpPost(
 				"http://client.gzife.edu.cn/ReaderLogin.aspx");
@@ -321,41 +262,5 @@ public class SaveMoney extends BaseActivity implements Runnable {
 
 	}
 
-	public void run() {
-		String result = "未找到主机,请检查网络！";
-		SharedPreferences settings = getSharedPreferences(Tool.CONFIG, 0);
-		String remoteIp = settings.getString(Tool.REMOTEIP, "192.168.1.102");
-
-		String moneys = myDb.allMoney();
-		HttpPost post = new HttpPost(remoteUrl.replace("REMOTEIP", remoteIp));
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		// 将金额字符串放在表单里面的moneys参数里面传递到远程服务器.
-		params.add(new BasicNameValuePair("moneys", moneys));
-
-		try {
-			if ("".equals(moneys)) {
-				result = "已经全部保存到服务端！";
-			} else {
-				post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-				HttpResponse response = new DefaultHttpClient().execute(post);
-				if (response.getStatusLine().getStatusCode() == 200) {
-					// 得到服务器端返回的结果字符串.
-					result = EntityUtils.toString(response.getEntity());
-					// 更新保存到远程端之后的状态为1
-					myDb.updateStatusAfterSave();
-				} else {
-					result = "出现错误，错误代码是:"
-							+ response.getStatusLine().getStatusCode();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			// 在接受完毕了服务器返回的数据之后，调用回调函数弹出返回的信息！
-			Message message = new Message();
-			message.what = SaveMoney.SUCCESS;
-			message.obj = result;
-			handler.sendMessage(message);
-		}
-	}
+	
 }

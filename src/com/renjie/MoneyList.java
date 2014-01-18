@@ -19,6 +19,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.renjie.tool.MoneyDAO;
 
@@ -134,8 +135,7 @@ public class MoneyList extends BaseActivity {
 	}
 
 	public void onResume() {
-		super.onResume();
-		System.out.println("onResume");
+		super.onResume(); 
 		queryList();
 	}
 
@@ -155,7 +155,7 @@ public class MoneyList extends BaseActivity {
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				String sno = "" + arg0.findViewById(R.id.time).getTag();
+				String sno = "" + arg1.findViewById(R.id.time).getTag(); 
 				deleteMoney(Long.parseLong(sno));
 			}
 		});
@@ -179,9 +179,9 @@ public class MoneyList extends BaseActivity {
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int which) {
-								myDb.delete(sno);
-								alert(getText(R.string.delete_success)
-										.toString());
+								myDb.delete(sno); 
+								Toast.makeText(getApplicationContext(),  getText(R.string.delete_success).toString() ,
+									     Toast.LENGTH_SHORT).show(); 
 								queryList();
 							}
 						}).show();
