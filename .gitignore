@@ -1,4 +1,4 @@
 .myeclipse/
 *.bak
 *.class
-bin/
+bin/*
