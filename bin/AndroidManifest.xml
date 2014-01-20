@@ -22,6 +22,8 @@
         </activity>
         <activity android:name=".HomePage" >
         </activity>
+        <activity android:name=".MorePage" >
+        </activity>
         <activity android:name=".NewHomePage" >
         </activity>
         <activity android:name=".FirstPage" >

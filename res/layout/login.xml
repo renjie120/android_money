@@ -101,7 +101,7 @@
 
         <Button
             android:id="@+id/loginbtn"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
             android:text="@string/login_sure"
@@ -110,7 +110,7 @@
 
         <Button
             android:id="@+id/quitbtn"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
             android:layout_marginLeft="30dp"

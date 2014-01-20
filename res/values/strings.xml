@@ -75,5 +75,9 @@
     <string name="sendmoney">发送金额数据</string>
     <string name="senddiary">发送日记数据</string>
     <string name="sendgongguo">发送功过数据</string>
-
+    <string name="more_item1">配置信息</string>
+    <string name="more_item2">删除金额</string>
+    <string name="more_item3">远程保存金额</string>
+    <string name="more_item4">备份金额</string>
+    <string name="more_item5">月度图片报表</string> 
 </resources>
