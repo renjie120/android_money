@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearlayout_contentView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/titile_gre_ym"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_height"
+        android:background="@drawable/topnavbg"
+        android:gravity="center"
+        android:text="@string/gongguo_title"
+        android:textColor="@drawable/white"
+        android:textSize="@dimen/titleTextSize" />
+
+    <TableLayout
+        android:id="@+id/gongguo_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/shape_corner_gridview"
+        android:padding="10dp" >
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/time"
+                style="@style/textstyle1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/timestr"
+                android:textSize="@dimen/editTextSize" >
+            </TextView>
+
+            <Button
+                android:id="@+id/chooseTime_btn"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_width"
+                android:layout_weight="1"
+                android:text="@string/con_chooseDate"
+                android:textSize="@dimen/editTextSize" >
+            </Button>
+        </TableRow>
+    </TableLayout>
+
+    <Button
+        android:id="@+id/savebtn"
+        android:layout_width="250dp"
+        android:layout_height="45dip"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="@string/con_save" />
+
+</LinearLayout>

@@ -1,13 +1,29 @@
 package com.renjie;
 
- 
-public class Tool { 
+import java.util.Calendar;
+
+public class Tool {
 	public static final String CONFIG = "CONFIG_USER";
 	public static final String USERNAME = "username";
 	public static final String REMOTEIP = "remoteip";
 	public static final String PASS = "pass";
+
+	/**
+	 * 返回今天的时间.
+	 * @return
+	 */
+	public static String getToday() {
+		final Calendar today = Calendar.getInstance();
+		int myyear = today.get(Calendar.YEAR);
+		int mymonth = today.get(Calendar.MONTH) + 1;
+		int myday = today.get(Calendar.DAY_OF_MONTH);
+		return new StringBuilder().append(myyear).append("-").append(mymonth)
+				.append("-").append(myday).toString();
+	}
+
 	/**
 	 * 验证身份证号校验位的方法.
+	 * 
 	 * @param certiCode
 	 * @return
 	 */
@@ -36,41 +52,46 @@ public class Tool {
 		}
 		return flag;
 	}
-	
+
 	/**
 	 * 得到身份证里面的生日信息.
+	 * 
 	 * @param certiCode
 	 * @return
 	 */
-	public static String getBirthday(String certiCode){
+	public static String getBirthday(String certiCode) {
 		return certiCode.substring(6, 13);
 	}
-	
+
 	/**
 	 * 得到身份证里面的省份信息.
+	 * 
 	 * @param certiCode
 	 * @return
 	 */
-	public static String getPlace(String certiCode){
+	public static String getPlace(String certiCode) {
 		return certiCode.substring(0, 6);
-	} 
+	}
+
 	/**
 	 * 得到性别.
+	 * 
 	 * @param certiCode
 	 * @return
 	 */
-	public static boolean getIsMan(String certiCode){
+	public static boolean getIsMan(String certiCode) {
 		int num = Integer.parseInt(certiCode.substring(17));
-		//单数是男性.
-		return num%2!=0;
-	}  
-	
+		// 单数是男性.
+		return num % 2 != 0;
+	}
+
 	/**
 	 * 判断字符串是不是空串.
+	 * 
 	 * @param str
 	 * @return
 	 */
-	public static boolean isEmpty(String str){
-		return null==str||"".equals(str);
+	public static boolean isEmpty(String str) {
+		return null == str || "".equals(str);
 	}
 }

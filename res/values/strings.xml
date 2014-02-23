@@ -79,5 +79,8 @@
     <string name="more_item2">删除金额</string>
     <string name="more_item3">远程保存金额</string>
     <string name="more_item4">备份金额</string>
-    <string name="more_item5">月度图片报表</string> 
+    <string name="more_item5">功过记录</string>
+    <string name="more_item6">私人日记</string>
+    <string name="gongguo_title">功过记录</string>
+
 </resources>
