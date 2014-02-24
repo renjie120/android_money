@@ -33,6 +33,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.renjie.tool.MoneyDAO;
+import com.renjie.tool.Tool;
 
 /**
  * 保存理财信息的主界面.
@@ -40,7 +41,7 @@ import com.renjie.tool.MoneyDAO;
  * @author lsq
  * 
  */
-public class SaveMoney extends BaseActivity  {
+public class SaveMoney extends BaseActivity {
 	private EditText getMoneyText;
 	private EditText getMoneyDescText;
 	private Spinner sortSpinner;
@@ -58,18 +59,18 @@ public class SaveMoney extends BaseActivity  {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.money_index);
 		// 实例化数据库
-		myDb = new MoneyDAO(this, 1);
+		myDb = new MoneyDAO(this, MoneyDAO.VERSION);
 		intent = this.getIntent();
 		getMoneyText = (EditText) findViewById(R.id.moneyText);
 		getMoneyDescText = (EditText) findViewById(R.id.moneyDescText);
 		// 下面是点击选择时间的按钮事件
-		dateBtn = (Button) findViewById(R.id.chooseTime_btn);
+		dateBtn = (Button) findViewById(R.id.chooseTime_btn2);
 		sortSpinner = (Spinner) findViewById(R.id.spinner_sort);
 		saveBtn = (Button) findViewById(R.id.savebtn);
-//		backBtn = (Button) findViewById(R.id.back);
+		// backBtn = (Button) findViewById(R.id.back);
 		// 调用绑定事件的私有方法。
 		prepareListener();
-		cancelKeyBoard(); 
+		cancelKeyBoard();
 	}
 
 	public void cancelKeyBoard() {
@@ -89,7 +90,7 @@ public class SaveMoney extends BaseActivity  {
 	int[] menu_toolbar_image_array = { R.drawable.nav_press_icon01,
 			R.drawable.nav_press_icon01, R.drawable.nav_press_icon01 };
 	/** 底部菜单文字 **/
-	String[] menu_toolbar_name_array = { "查看全部", "删除全部", "同步" }; 
+	String[] menu_toolbar_name_array = { "查看全部", "删除全部", "同步" };
 
 	OnItemClickListener toolBarListener = new OnItemClickListener() {
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
@@ -97,7 +98,7 @@ public class SaveMoney extends BaseActivity  {
 			switch (arg2) {
 			case TOOLBAR_ITEM_SEE_ALL:
 				goToMoneyList();
-				break;  
+				break;
 			}
 		}
 	};
@@ -108,8 +109,6 @@ public class SaveMoney extends BaseActivity  {
 		startActivity(openUrl);
 		SaveMoney.this.finish();
 	}
-
-	
 
 	/**
 	 * 设置按钮的单击事件
@@ -129,22 +128,23 @@ public class SaveMoney extends BaseActivity  {
 					alert(getText(R.string.save_failure).toString());
 					return;
 				}
-				myDb.insert(money, time, moneyDesc, moneySort, "0");
-				Toast.makeText(getApplicationContext(),  getText(R.string.save_success).toString() ,
-					     Toast.LENGTH_SHORT).show(); 
-				//alert();
+				myDb.insertMoney(money, time, moneyDesc, moneySort, "0");
+				Toast.makeText(getApplicationContext(),
+						getText(R.string.save_success).toString(),
+						Toast.LENGTH_SHORT).show();
+				// alert();
 				getMoneyText.setText("");
 				getMoneyDescText.setText("");
 			}
 		});
-//		backBtn.setOnClickListener(new OnClickListener() {
-//			public void onClick(View v) {
-//				Intent openUrl = new Intent();
-//				openUrl.setClass(SaveMoney.this, HomePage.class);
-//				startActivity(openUrl);
-//				SaveMoney.this.finish();
-//			}
-//		});
+		// backBtn.setOnClickListener(new OnClickListener() {
+		// public void onClick(View v) {
+		// Intent openUrl = new Intent();
+		// openUrl.setClass(SaveMoney.this, HomePage.class);
+		// startActivity(openUrl);
+		// SaveMoney.this.finish();
+		// }
+		// });
 
 		/**
 		 * 打开日期
@@ -163,7 +163,7 @@ public class SaveMoney extends BaseActivity  {
 		// 展示当前日期
 		dateBtn.setText(getToday());
 	}
- 
+
 	/**
 	 * 自定义弹出日期选择框
 	 */
@@ -184,8 +184,6 @@ public class SaveMoney extends BaseActivity  {
 		return new StringBuilder().append(myyear).append("-")
 				.append(mymonth + 1).append("-").append(myday).toString();
 	}
-
-	
 
 	private void DisplayMoney(Cursor c) {
 		Toast.makeText(
@@ -228,7 +226,6 @@ public class SaveMoney extends BaseActivity  {
 		}
 	}
 
-	
 	public static void main(String[] aa) {
 		HttpPost post = new HttpPost(
 				"http://client.gzife.edu.cn/ReaderLogin.aspx");
@@ -254,5 +251,4 @@ public class SaveMoney extends BaseActivity  {
 
 	}
 
-	
 }

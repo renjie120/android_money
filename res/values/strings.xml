@@ -10,6 +10,7 @@
     <string name="hello">Hello 111!</string>
     <string name="licaixitongtitle">理财系统</string>
     <string name="timestr">收支日期</string>
+    <string name="timestr2">记录日期</string>
     <string name="moneystr">收支金额</string>
     <string name="sortstr">收支类别</string>
     <string name="moneydesc">收支说明</string>
@@ -81,6 +82,15 @@
     <string name="more_item4">备份金额</string>
     <string name="more_item5">功过记录</string>
     <string name="more_item6">私人日记</string>
+    <string name="more_item7">发送功过数据</string>
+    <string name="more_item8">功过列表</string>
+    <string name="more_item9">日记列表</string>
     <string name="gongguo_title">功过记录</string>
-
+    <string name="gongguo_list">功过列表</string>
+    <string name="diary_list">日记列表</string>
+    <string name="diary_title">日记本</string>
+    <string name="diary_date">发生日期</string>
+    <string name="diary_time">发生时间</string>
+    <string name="diary_content">日记内容</string>
+    <string name="diary_jiami">日记加密</string> 
 </resources>

@@ -22,24 +22,31 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.renjie.adapter.DiaryAdapter;
+import com.renjie.adapter.GongguoAdapter;
 import com.renjie.tool.MoneyDAO;
+import com.renjie.tool.Tool;
 
 /**
  * 更多的九宫格布局.
@@ -47,16 +54,35 @@ import com.renjie.tool.MoneyDAO;
  * @author Administrator
  * 
  */
-public class MorePage extends BaseActivity implements Runnable {
+public class MorePage extends BaseActivity implements Runnable, OnClickListener {
 	int[] allMages = { R.drawable.item_1, R.drawable.item_2, R.drawable.item_3,
+			R.drawable.item_1, R.drawable.item_2, R.drawable.item_3,
 			R.drawable.item_1, R.drawable.item_2, R.drawable.item_3 };
 	int[] allitem = { R.string.more_item1, R.string.more_item2,
 			R.string.more_item3, R.string.more_item4, R.string.more_item5,
-			R.string.more_item6 };
+			R.string.more_item6, R.string.more_item7, R.string.more_item8,
+			R.string.more_item9 };
 	private MoneyDAO myDb;
+	private Button saveGonguo_btn, saveDiary_btn;
 	String remoteUrl = "http://REMOTEIP:8080/money/superconsole!importMoneyFromPhone.do";
 	private final static int SUCCESS = 1;
+	private int myyear;
+	private int mymonth;
+	private int myday;
+	private Button dateBtn;
+	private Button timeBtn;
+	private ImageView jiamiImg;
+	private EditText contentEdit;
+	private Button returnbtn;
+	private ListView gongguolist;
+	private ListView diarylist;
+	Intent intent;
+	static final int DATE_DIALOG_ID = 0;
+	private TableLayout table;
 
+	/**
+	 * 保存金额数据到远程.
+	 */
 	public void run() {
 		String result = "未找到主机,请检查网络！";
 		SharedPreferences settings = getSharedPreferences(Tool.CONFIG, 0);
@@ -78,7 +104,7 @@ public class MorePage extends BaseActivity implements Runnable {
 					// 得到服务器端返回的结果字符串.
 					result = EntityUtils.toString(response.getEntity());
 					// 更新保存到远程端之后的状态为1
-					myDb.updateStatusAfterSave();
+					myDb.updateMoneyStatusAfterSave();
 				} else {
 					result = "出现错误，错误代码是:"
 							+ response.getStatusLine().getStatusCode();
@@ -126,7 +152,7 @@ public class MorePage extends BaseActivity implements Runnable {
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int which) {
-								myDb.deleteAll();
+								myDb.deleteAllMoney();
 							}
 						}).show();
 	}
@@ -158,21 +184,26 @@ public class MorePage extends BaseActivity implements Runnable {
 		mailIntent.setType("plain/text");
 		mailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
 				new String[] { "lishuiqing110@163.com" });
-		mailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-				Tool.getToday() + "money");
+		mailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getToday()
+				+ "money");
 		mailIntent.putExtra(android.content.Intent.EXTRA_TEXT, money);
 		startActivity(Intent.createChooser(mailIntent,
 				getStr(R.string.sendmoney)));
 	}
 
-	private int myyear;
-	private int mymonth;
-	private int myday;
-	private Button dateBtn;
-	private Button saveBtn;
-	Intent intent;
-	static final int DATE_DIALOG_ID = 0;
-	private TableLayout table;
+	/**
+	 * 返回今天的时间.
+	 * 
+	 * @return
+	 */
+	public String getToday() {
+		final Calendar today = Calendar.getInstance();
+		myyear = today.get(Calendar.YEAR);
+		mymonth = today.get(Calendar.MONTH) + 1;
+		myday = today.get(Calendar.DAY_OF_MONTH);
+		return new StringBuilder().append(myyear).append("-").append(mymonth)
+				.append("-").append(myday).toString();
+	}
 
 	/**
 	 * 添加功过里面的全部数据
@@ -220,26 +251,140 @@ public class MorePage extends BaseActivity implements Runnable {
 	private void gotoGongguo() {
 		setContentView(R.layout.gongguo_index);
 		dateBtn = (Button) findViewById(R.id.chooseTime_btn);
-		saveBtn = (Button) findViewById(R.id.savebtn);
+		saveGonguo_btn = (Button) findViewById(R.id.saveGonguo_btn);
 		table = (TableLayout) findViewById(R.id.gongguo_table);
 		addRow();
-		dateBtn.setText(Tool.getToday());
+		dateBtn.setText(getToday());
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.more);
-		// 实例化数据库
-		myDb = new MoneyDAO(this, 1);
+	/**
+	 * 跳转到日记本程序.
+	 */
+	private void gotoDiary() {
+		setContentView(R.layout.diary_index);
+		dateBtn = (Button) findViewById(R.id.chooseDate_btn);
+		timeBtn = (Button) findViewById(R.id.chooseTime_btn);
+		jiamiImg = (ImageView) findViewById(R.id.jiami);
+		contentEdit = (EditText) findViewById(R.id.diaryContent);
+		saveDiary_btn = (Button) findViewById(R.id.saveDiary_btn);
+		dateBtn.setText(getToday());
+		// 调用绑定事件的私有方法。
+		prepareListener();
+	}
 
+	/**
+	 * 远程保存功过信息.
+	 */
+	private void sendGongguo() {
+		setContentView(R.layout.gongguo_index);
+		dateBtn = (Button) findViewById(R.id.chooseTime_btn);
+		saveGonguo_btn = (Button) findViewById(R.id.saveGonguo_btn);
+		table = (TableLayout) findViewById(R.id.gongguo_table);
+		addRow();
+		dateBtn.setText(getToday());
+		// 调用绑定事件的私有方法。
+		prepareListener();
+	}
+
+	/**
+	 * 功过列表
+	 */
+	private void gongguoList() {
+		setContentView(R.layout.gongguo_list);
+		gongguolist = (ListView) findViewById(R.id.ListView);
+		returnbtn = (Button) findViewById(R.id.returnbtn);
+
+		initGongguoList();
+
+		prepareListener();
+	}
+
+	/**
+	 * 显示功过列表.
+	 */
+	private void initGongguoList() {
+		// 生成动态数组，加入数据
+		ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String, Object>>();
+		Cursor allGongguo = myDb.selectGonguoTimeAndStatus();
+
+		if (allGongguo.getCount() >= 1) {
+			allGongguo.moveToFirst();
+			do {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("status", allGongguo.getString(2));
+				map.put("time", allGongguo.getString(1));
+				map.put("sno", allGongguo.getString(0));
+				listItem.add(map);
+			} while (allGongguo.moveToNext());
+		}
+		myDb.close();
+		GongguoAdapter adapter = new GongguoAdapter(listItem, this);
+		gongguolist.setAdapter(adapter);
+	}
+
+	/**
+	 * 显示日志列表.
+	 */
+	private void initDiaryList() {
+		// 生成动态数组，加入数据
+		ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String, Object>>();
+		Cursor allDiary = myDb.selectDiary();
+
+		if (allDiary.getCount() >= 1) {
+			allDiary.moveToFirst();
+			do {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("date", allDiary.getString(2));
+				map.put("time", allDiary.getString(1));
+				map.put("sno", allDiary.getString(0));
+				map.put("status", allDiary.getString(5));
+				map.put("content", allDiary.getString(4));
+				map.put("jiami", allDiary.getString(3));
+				listItem.add(map);
+			} while (allDiary.moveToNext());
+		}
+		myDb.close();
+		DiaryAdapter adapter = new DiaryAdapter(listItem, this);
+		diarylist.setAdapter(adapter);
+	}
+
+	/**
+	 * 日记本列表.
+	 */
+	private void diaryList() {
+		setContentView(R.layout.diary_list);
+		diarylist = (ListView) findViewById(R.id.ListView);
+		returnbtn = (Button) findViewById(R.id.returnbtn);
+		initDiaryList();
+		// 调用绑定事件的私有方法。
+		prepareListener();
+	}
+
+	protected void onResume() {
+		super.onResume();
+		initFirstPage();
+	}
+
+	/**
+	 * 初始化九宫格布局.
+	 */
+	private void initFirstPage() {
+		setContentView(R.layout.more);
+		initGridView();
+		prepareListener();
+	}
+
+	/**
+	 * 初始化九宫格布局.
+	 */
+	private void initGridView() {
 		GridView gridview = (GridView) findViewById(R.id.GridView);
 		ArrayList<HashMap<String, Object>> meumList = new ArrayList<HashMap<String, Object>>();
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 9; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("ItemImage", allMages[i % 6]);
+			map.put("ItemImage", allMages[i % 3]);
 			map.put("ItemText", getText(allitem[i]).toString());
 			meumList.add(map);
 		}
@@ -269,23 +414,44 @@ public class MorePage extends BaseActivity implements Runnable {
 				case 2:
 					saveToServer();
 					break;
-				case 3:// 备份金额数据
+				// 备份金额数据
+				case 3:
 					backup();
 					break;
-				case 4: // 功过记录
+				// 功过记录
+				case 4:
 					gotoGongguo();
 					break;
-				case 5:// 日记本
-					saveToServer();
+				// 私人日记本
+				case 5:
+					gotoDiary();
+					break;
+				// 发送功过信息
+				case 6:
+					sendGongguo();
+					break;
+				// 功过列表
+				case 7:
+					gongguoList();
+					break;
+				// 日记本列表
+				case 8:
+					diaryList();
 					break;
 				default:
 					break;
 				}
-				// Toast用于向用户显示一些帮助/提示
 			}
 		});
-		// 调用绑定事件的私有方法。
-		prepareListener();
+	}
+
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		initFirstPage();
+		// 实例化数据库
+		myDb = new MoneyDAO(this, MoneyDAO.VERSION);
+
 	}
 
 	/**
@@ -308,12 +474,16 @@ public class MorePage extends BaseActivity implements Runnable {
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case DATE_DIALOG_ID:
+			System.out.println("myyear=" + myyear + ",mymonth=" + mymonth);
 			return new DatePickerDialog(this, mDateSetListener, myyear,
 					mymonth, myday);
 		}
 		return null;
 	}
 
+	/**
+	 * 跳转到保存金额信息.
+	 */
 	public void goSaveMoney() {
 		Intent openUrl = new Intent();
 		openUrl.setClass(MorePage.this, SaveMoney.class);
@@ -324,12 +494,45 @@ public class MorePage extends BaseActivity implements Runnable {
 	// 调用绑定事件的私有方法。
 	protected void prepareListener() {
 		if (dateBtn != null) {
-			dateBtn.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-					// 弹出一个对话框,将会触发后面的onCreateDialog()
-					showDialog(DATE_DIALOG_ID);
-				}
-			});
+			dateBtn.setOnClickListener(this);
+		}
+		if (saveGonguo_btn != null) {
+			saveGonguo_btn.setOnClickListener(this);
+		}
+		if (returnbtn != null) {
+			returnbtn.setOnClickListener(this);
+		}
+		if (saveDiary_btn != null) {
+			saveDiary_btn.setOnClickListener(this);
+		}
+	}
+
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.chooseTime_btn) {
+			showDialog(DATE_DIALOG_ID);
+		} else if (v.getId() == R.id.saveGonguo_btn) {
+			String time = dateBtn.getText().toString();
+			int ct = table.getChildCount();
+			for (int i = 0; i < ct; i++) {
+				TableRow row = (TableRow) table.getChildAt(i);
+				TextView textView = (TextView) row.getChildAt(0);
+				ImageView img = (ImageView) row.getChildAt(1);
+				myDb.insertGonguo(time, textView.getTag() + "", textView
+						.getText().toString(), "0", img.getTag() + "");
+			}
+		}
+		// 点击返回按钮，就退回原来的初始页面布局.
+		else if (v.getId() == R.id.returnbtn) {
+			initFirstPage();
+		}
+		// 保存日记
+		else if (v.getId() == R.id.saveDiary_btn) {
+			String time = timeBtn.getText().toString();
+			String date = dateBtn.getText().toString();
+			String content = contentEdit.getText().toString();
+			String jiami = jiamiImg.getTag() + "";
+			myDb.insertDiary(date, time, content, "0", jiami);
 		}
 	}
 }

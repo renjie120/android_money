@@ -27,9 +27,7 @@
         <activity android:name=".NewHomePage" >
         </activity>
         <activity android:name=".FirstPage" >
-        </activity>
-        <activity android:name=".SaveGongguo" >
-        </activity>
+        </activity> 
         <activity android:name=".MoneyList" >
         </activity>
         <activity

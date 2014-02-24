@@ -1,5 +1,7 @@
 package com.renjie;
 
+import com.renjie.tool.Tool;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;

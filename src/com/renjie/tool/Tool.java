@@ -1,4 +1,4 @@
-package com.renjie;
+package com.renjie.tool;
 
 import java.util.Calendar;
 
@@ -8,18 +8,7 @@ public class Tool {
 	public static final String REMOTEIP = "remoteip";
 	public static final String PASS = "pass";
 
-	/**
-	 * 返回今天的时间.
-	 * @return
-	 */
-	public static String getToday() {
-		final Calendar today = Calendar.getInstance();
-		int myyear = today.get(Calendar.YEAR);
-		int mymonth = today.get(Calendar.MONTH) + 1;
-		int myday = today.get(Calendar.DAY_OF_MONTH);
-		return new StringBuilder().append(myyear).append("-").append(mymonth)
-				.append("-").append(myday).toString();
-	}
+	
 
 	/**
 	 * 验证身份证号校验位的方法.

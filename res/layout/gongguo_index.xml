@@ -16,46 +16,54 @@
         android:textColor="@drawable/white"
         android:textSize="@dimen/titleTextSize" />
 
-    <TableLayout
-        android:id="@+id/gongguo_table"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
-        android:background="@drawable/shape_corner_gridview"
-        android:padding="10dp" >
+        android:layout_margin="5dp"
+        android:orientation="horizontal" >
 
-        <TableRow>
+        <TextView
+            android:id="@+id/time"
+            style="@style/textstyle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/timestr2"
+            android:textSize="@dimen/editTextSize" >
+        </TextView>
 
-            <TextView
-                android:id="@+id/time"
-                style="@style/textstyle1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/timestr"
-                android:textSize="@dimen/editTextSize" >
-            </TextView>
+        <Button
+            android:id="@+id/chooseTime_btn"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_width"
+            android:layout_weight="1"
+            android:text="@string/con_chooseDate"
+            android:textSize="@dimen/editTextSize" >
+        </Button>
+    </LinearLayout>
 
-            <Button
-                android:id="@+id/chooseTime_btn"
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_width"
-                android:layout_weight="1"
-                android:text="@string/con_chooseDate"
-                android:textSize="@dimen/editTextSize" >
-            </Button>
-        </TableRow>
-    </TableLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fadingEdge="vertical"
+        android:padding="5dp" >
+
+        <TableLayout
+            android:id="@+id/gongguo_table"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/shape_corner_gridview"
+            android:padding="10dp"
+            android:scrollbars="vertical" >
+        </TableLayout>
+    </ScrollView>
 
     <Button
-        android:id="@+id/savebtn"
-        android:layout_width="250dp"
-        android:layout_height="45dip"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="5dp"
-        android:gravity="center"
-        android:text="@string/con_save" />
+        android:id="@+id/saveGonguo_btn"
+        style="@style/saveBtnStyle" />
 
 </LinearLayout>

@@ -17,9 +17,24 @@
         <item name="android:layout_weight">1.0</item>
     </style>
 
+    <style name="line">
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:background">#545454</item>
+    </style>
+
     <style name="textstyle1">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">#FF0000</item>
+    </style>
+
+    <style name="saveBtnStyle">
+        <item name="android:layout_width">250dp</item>
+        <item name="android:layout_height">45dip</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:text">@string/con_save</item>
     </style>
 
     <style name="redstyle">

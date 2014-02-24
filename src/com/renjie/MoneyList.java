@@ -4,23 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.renjie.adapter.MoneyAdapter;
 import com.renjie.tool.MoneyDAO;
 
 /**
@@ -36,11 +32,11 @@ public class MoneyList extends BaseActivity {
 
 	private void queryList() {
 		// 实例化数据库
-		myDb = new MoneyDAO(this, 1);
+		myDb = new MoneyDAO(this, MoneyDAO.VERSION);
 
 		// 生成动态数组，加入数据
 		ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String, Object>>();
-		Cursor allDatas = myDb.selectAll();
+		Cursor allDatas = myDb.selectAllMoney();
 
 		if (allDatas.getCount() >= 1) {
 			allDatas.moveToFirst();
@@ -54,86 +50,11 @@ public class MoneyList extends BaseActivity {
 			} while (allDatas.moveToNext());
 		}
 		myDb.close();
-		MyImgAdapter adapter = new MyImgAdapter(listItem, this);
-		// SimpleAdapter listItemAdapter = new SimpleAdapter(this, listItem,//
-		// 数据源
-		// // 设置一行的显示布局!
-		// R.layout.money_list,// ListItem的XML实现
-		// // 动态数组与ImageItem对应的子项
-		// new String[] { "money", "time", "moneytype" },
-		// // ImageItem的XML文件里面的一个ImageView,两个TextView ID
-		// new int[] { R.id.money, R.id.time, R.id.moneytype });
-		// final SimpleAdapter listItemAdapter2 = listItemAdapter;
+		MoneyAdapter adapter = new MoneyAdapter(listItem, this); 
 		list.setAdapter(adapter);
 	}
 
-	class MyImgAdapter extends BaseAdapter {
-		private ArrayList<HashMap<String, Object>> data;// 用于接收传递过来的Context对象
-		private Context context;
-
-		public MyImgAdapter(ArrayList<HashMap<String, Object>> data,
-				Context context) {
-			super();
-			this.data = data;
-			this.context = context;
-		}
-
-		@Override
-		public int getCount() {
-			int count = 0;
-			if (null != data) {
-				count = data.size();
-			}
-			return count;
-		}
-
-		@Override
-		public HashMap<String, Object> getItem(int position) {
-			return data.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder viewHolder = null;
-			if (null == convertView) {
-				viewHolder = new ViewHolder();
-				LayoutInflater mInflater = LayoutInflater.from(context);
-				convertView = mInflater.inflate(R.layout.money_list, null);
-
-				viewHolder.time = (TextView) convertView
-						.findViewById(R.id.time);
-				viewHolder.moneytype = (TextView) convertView
-						.findViewById(R.id.moneytype);
-				viewHolder.money = (TextView) convertView
-						.findViewById(R.id.money);
-
-				convertView.setTag(viewHolder);
-			} else {
-				viewHolder = (ViewHolder) convertView.getTag();
-			}
-
-			HashMap<String, Object> markerItem = getItem(position);
-			if (null != markerItem) {
-				viewHolder.time.setTag(markerItem.get("sno"));
-				viewHolder.time.setText("" + markerItem.get("time"));
-				viewHolder.moneytype.setText("" + markerItem.get("moneytype"));
-				viewHolder.money.setText("" + markerItem.get("money"));
-			}
-			return convertView;
-		}
-	}
-
-	public final static class ViewHolder {
-		public TextView time;
-		public TextView moneytype;
-		public TextView money;
-	}
-
+	
 	public void onResume() {
 		super.onResume(); 
 		queryList();
@@ -179,7 +100,7 @@ public class MoneyList extends BaseActivity {
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int which) {
-								myDb.delete(sno); 
+								myDb.deleteMoney(sno); 
 								Toast.makeText(getApplicationContext(),  getText(R.string.delete_success).toString() ,
 									     Toast.LENGTH_SHORT).show(); 
 								queryList();

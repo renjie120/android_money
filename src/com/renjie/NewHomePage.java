@@ -38,7 +38,7 @@ public class NewHomePage extends TabActivity implements OnCheckedChangeListener 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.homepage2);
  
-		moneyDb = new MoneyDAO(this, 1);
+		moneyDb = new MoneyDAO(this, MoneyDAO.VERSION);
 
 		group = (RadioGroup) findViewById(R.id.main_radio);
 		group.setOnCheckedChangeListener(this);
@@ -46,24 +46,16 @@ public class NewHomePage extends TabActivity implements OnCheckedChangeListener 
 		tabHost = this.getTabHost();
 		TabSpec tab1 = tabHost.newTabSpec(TAB_ITEM_1);
 		TabSpec tab2 = tabHost.newTabSpec(TAB_ITEM_2);
-		TabSpec tab3 = tabHost.newTabSpec(TAB_ITEM_3);
-		// TabSpec tab4 = tabHost.newTabSpec(TAB_ITEM_4);
-		// TabSpec tab5 = tabHost.newTabSpec(TAB_ITEM_5);
+		TabSpec tab3 = tabHost.newTabSpec(TAB_ITEM_3); 
 		tab1.setIndicator(TAB_ITEM_1).setContent(
 				new Intent(NewHomePage.this, SaveMoney.class));
 		tab2.setIndicator(TAB_ITEM_3).setContent(
 				new Intent(NewHomePage.this, MoneyList.class));
 		tab3.setIndicator(TAB_ITEM_2).setContent(
-				new Intent(NewHomePage.this, MorePage.class));
-		// tab4.setIndicator(TAB_ITEM_4).setContent(
-		// new Intent(NewHomePage.this, SaveConfig.class));
-		// tab5.setIndicator(TAB_ITEM_5).setContent(
-		// new Intent(NewHomePage.this, SaveMoney.class));
+				new Intent(NewHomePage.this, MorePage.class)); 
 		tabHost.addTab(tab1);
 		tabHost.addTab(tab2);
-		tabHost.addTab(tab3);
-		// tabHost.addTab(tab4);
-		// tabHost.addTab(tab5);
+		tabHost.addTab(tab3); 
 	}
 
 	public String getToday() {

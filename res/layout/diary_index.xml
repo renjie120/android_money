@@ -12,54 +12,29 @@
         android:layout_height="@dimen/menu_height"
         android:background="@drawable/topnavbg"
         android:gravity="center"
-        android:text="@string/app_name"
+        android:text="@string/diary_title"
         android:textColor="@drawable/white"
         android:textSize="@dimen/titleTextSize" />
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_margin="10dp"
         android:background="@drawable/shape_corner_gridview"
         android:padding="10dp" >
 
         <TableRow>
 
             <TextView
-                android:id="@+id/money"
                 style="@style/textstyle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/moneystr"
-                android:textSize="@dimen/editTextSize" >
-            </TextView>
-
-            <EditText
-                android:id="@+id/moneyText"
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_width"
-                android:layout_weight="1"
-                android:numeric="decimal"
-                android:textSize="@dimen/editTextSize" >
-            </EditText>
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                android:id="@+id/time"
-                style="@style/textstyle1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/timestr"
+                android:text="@string/diary_date"
                 android:textSize="@dimen/editTextSize" >
             </TextView>
 
             <Button
-                android:id="@+id/chooseTime_btn2"
+                android:id="@+id/chooseDate_btn"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_width"
@@ -72,38 +47,36 @@
         <TableRow>
 
             <TextView
-                android:id="@+id/sort"
                 style="@style/textstyle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/sortstr"
+                android:text="@string/diary_time"
                 android:textSize="@dimen/editTextSize" >
             </TextView>
 
-            <Spinner
-                android:id="@+id/spinner_sort"
+            <Button
+                android:id="@+id/chooseTime_btn"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_width"
                 android:layout_weight="1"
-                android:drawSelectorOnTop="true"
-                android:prompt="@string/con_sort_prompt"
-                android:textSize="@dimen/editTextSize" />
+                android:text="@string/con_chooseDate"
+                android:textSize="@dimen/editTextSize" >
+            </Button>
         </TableRow>
 
         <TableRow>
 
             <TextView
-                android:id="@+id/moneydesc"
                 style="@style/textstyle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/moneydesc"
+                android:text="@string/diary_content"
                 android:textSize="@dimen/editTextSize" >
             </TextView>
 
             <EditText
-                android:id="@+id/moneyDescText"
+                android:id="@+id/diaryContent"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_width"
@@ -114,10 +87,28 @@
                 android:textSize="@dimen/editTextSize" >
             </EditText>
         </TableRow>
+
+        <TableRow>
+
+            <TextView
+                style="@style/textstyle1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/diary_jiami"
+                android:textSize="@dimen/editTextSize" >
+            </TextView>
+
+            <ImageView
+                android:id="@+id/jiami"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:src="@drawable/off_bg"
+                android:layout_marginLeft="5dp" />
+        </TableRow>
     </TableLayout>
 
     <Button
-        android:id="@+id/savebtn"
+        android:id="@+id/saveDiary_btn"
         style="@style/saveBtnStyle" />
 
 </LinearLayout>
