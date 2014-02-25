@@ -61,7 +61,7 @@ public class GongguoAdapter extends BaseAdapter {
 
 		HashMap<String, Object> markerItem = getItem(position);
 		if (null != markerItem) {
-			viewHolder.time.setTag(markerItem.get("sno"));
+			viewHolder.time.setTag(markerItem.get("time"));
 			viewHolder.time.setText("" + markerItem.get("time"));
 			viewHolder.status.setText("0".equals(markerItem.get("status"))?"未同步":"已经同步");
 		}

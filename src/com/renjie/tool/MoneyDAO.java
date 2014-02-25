@@ -251,10 +251,10 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	 * 
 	 * @param id
 	 */
-	public void deleteGonguo(long id) {
+	public void deleteGonguoByTime(String time) {
 		SQLiteDatabase db = this.getWritableDatabase();
-		String where = "sno = ?";
-		String[] whereValue = { Long.toString(id) };
+		String where = "time = ?";
+		String[] whereValue = { time };
 		db.delete(GONGGUO_TABLENAME, where, whereValue);
 		db.close();
 	}

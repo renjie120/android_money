@@ -14,7 +14,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -55,13 +54,11 @@ import com.renjie.tool.Tool;
  * 
  */
 public class MorePage extends BaseActivity implements Runnable, OnClickListener {
-	int[] allMages = { R.drawable.item_1, R.drawable.item_2, R.drawable.item_3,
-			R.drawable.item_1, R.drawable.item_2, R.drawable.item_3,
-			R.drawable.item_1, R.drawable.item_2, R.drawable.item_3 };
+	int[] allMages = { R.drawable.item_1, R.drawable.item_2, R.drawable.item_3 };
 	int[] allitem = { R.string.more_item1, R.string.more_item2,
 			R.string.more_item3, R.string.more_item4, R.string.more_item5,
 			R.string.more_item6, R.string.more_item7, R.string.more_item8,
-			R.string.more_item9 };
+			R.string.more_item9, R.string.more_item10 };
 	private MoneyDAO myDb;
 	private Button saveGonguo_btn, saveDiary_btn;
 	String remoteUrl = "http://REMOTEIP:8080/money/superconsole!importMoneyFromPhone.do";
@@ -137,24 +134,11 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 	 * 删除全部的收支信息
 	 */
 	private void deleteAll() {
-		new AlertDialog.Builder(this)
-				.setTitle(R.string.app_name)
-				.setMessage(R.string.delete_all_confirm)
-				.setNegativeButton(R.string.con_cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-
-							}
-						})
-				// 如果是确定退出就退出程序！
-				.setPositiveButton(R.string.con_ok,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-								myDb.deleteAllMoney();
-							}
-						}).show();
+		confirm(new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				myDb.deleteAllMoney();
+			}
+		});
 	}
 
 	ProgressDialog myDialog = null;
@@ -264,8 +248,8 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 	 */
 	private void gotoDiary() {
 		setContentView(R.layout.diary_index);
-		dateBtn = (Button) findViewById(R.id.chooseDate_btn);
-		timeBtn = (Button) findViewById(R.id.chooseTime_btn);
+		dateBtn = (Button) findViewById(R.id.diaryDate);
+		timeBtn = (Button) findViewById(R.id.diaryTime);
 		jiamiImg = (ImageView) findViewById(R.id.jiami);
 		contentEdit = (EditText) findViewById(R.id.diaryContent);
 		saveDiary_btn = (Button) findViewById(R.id.saveDiary_btn);
@@ -299,6 +283,38 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		initGongguoList();
 
 		prepareListener();
+	}
+
+	/**
+	 * 删除日记.
+	 * 
+	 * @param time
+	 */
+	private void deleteDiary(final long sno) {
+		confirm(new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				myDb.deleteDiary(sno);
+				showMess(R.string.delete_success);
+				initDiaryList();
+			}
+		});
+	}
+
+	/**
+	 * 删除功过信息.
+	 * 
+	 * @param id
+	 */
+	private void deleteGonguo(final String time) {
+		confirm(new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				myDb.deleteGonguoByTime(time);
+				showMess(R.string.delete_success);
+				initGongguoList();
+			}
+		});
 	}
 
 	/**
@@ -362,6 +378,9 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		prepareListener();
 	}
 
+	/**
+	 * 重新返回页面的时候，直接显示九宫格布局.
+	 */
 	protected void onResume() {
 		super.onResume();
 		initFirstPage();
@@ -376,13 +395,19 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		prepareListener();
 	}
 
+	private void goHualun() {
+		Intent openUrl = new Intent();
+		openUrl.setClass(MorePage.this, DateActivity.class);
+		startActivity(openUrl);
+	}
+
 	/**
 	 * 初始化九宫格布局.
 	 */
 	private void initGridView() {
 		GridView gridview = (GridView) findViewById(R.id.GridView);
 		ArrayList<HashMap<String, Object>> meumList = new ArrayList<HashMap<String, Object>>();
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < 10; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("ItemImage", allMages[i % 3]);
 			map.put("ItemText", getText(allitem[i]).toString());
@@ -437,6 +462,9 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 				// 日记本列表
 				case 8:
 					diaryList();
+					break;// 日记本列表
+				case 9:
+					goHualun();
 					break;
 				default:
 					break;
@@ -505,11 +533,46 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		if (saveDiary_btn != null) {
 			saveDiary_btn.setOnClickListener(this);
 		}
+		if (jiamiImg != null) {
+			jiamiImg.setTag("false");
+			jiamiImg.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if ("false".equals(v.getTag())) {
+						jiamiImg.setTag("true");
+						jiamiImg.setSelected(true);
+					} else {
+						jiamiImg.setTag("false");
+						jiamiImg.setSelected(false);
+					}
+				}
+			});
+		}
+		if (gongguolist != null)
+			gongguolist
+					.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+						public void onItemClick(AdapterView<?> arg0, View arg1,
+								int arg2, long arg3) {
+							String sno = ""
+									+ arg1.findViewById(R.id.time).getTag();
+							deleteGonguo(sno);
+						}
+					});
+		if (diarylist != null)
+			diarylist
+					.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+						public void onItemClick(AdapterView<?> arg0, View arg1,
+								int arg2, long arg3) {
+							String sno = ""
+									+ arg1.findViewById(R.id.time).getTag();
+							deleteDiary(Long.parseLong(sno));
+						}
+					});
 	}
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.chooseTime_btn) {
+		if (v.getId() == R.id.chooseTime_btn || v.getId() == R.id.diaryDate) {
 			showDialog(DATE_DIALOG_ID);
 		} else if (v.getId() == R.id.saveGonguo_btn) {
 			String time = dateBtn.getText().toString();
@@ -521,6 +584,7 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 				myDb.insertGonguo(time, textView.getTag() + "", textView
 						.getText().toString(), "0", img.getTag() + "");
 			}
+			showMess(R.string.save_success);
 		}
 		// 点击返回按钮，就退回原来的初始页面布局.
 		else if (v.getId() == R.id.returnbtn) {
@@ -533,6 +597,7 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 			String content = contentEdit.getText().toString();
 			String jiami = jiamiImg.getTag() + "";
 			myDb.insertDiary(date, time, content, "0", jiami);
+			showMess(R.string.save_success);
 		}
 	}
 }

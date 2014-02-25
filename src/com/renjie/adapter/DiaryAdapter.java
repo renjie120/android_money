@@ -61,6 +61,7 @@ public class DiaryAdapter extends BaseAdapter {
 		HashMap<String, Object> markerItem = getItem(position);
 		if (null != markerItem) {
 			viewHolder.time.setText(markerItem.get("time") + "");
+			viewHolder.time.setTag(markerItem.get("sno"));
 			viewHolder.date.setText("" + markerItem.get("date"));
 			if ("true".equals(markerItem.get("jiami"))) {
 				viewHolder.content.setText("已经加密.");

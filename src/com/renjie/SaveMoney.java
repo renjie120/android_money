@@ -129,9 +129,7 @@ public class SaveMoney extends BaseActivity {
 					return;
 				}
 				myDb.insertMoney(money, time, moneyDesc, moneySort, "0");
-				Toast.makeText(getApplicationContext(),
-						getText(R.string.save_success).toString(),
-						Toast.LENGTH_SHORT).show();
+				showMess(R.string.save_success); 
 				// alert();
 				getMoneyText.setText("");
 				getMoneyDescText.setText("");

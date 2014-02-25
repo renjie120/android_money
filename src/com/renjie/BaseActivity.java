@@ -14,13 +14,14 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 /**
  * @author lsq
  * 
  */
 public abstract class BaseActivity extends Activity {
-	abstract void prepareListener();  
+	abstract void prepareListener();
 
 	protected SimpleAdapter getMenu(String[] menuNameArray,
 			int[] imageResourceArray, int layout) {
@@ -104,6 +105,44 @@ public abstract class BaseActivity extends Activity {
 			ggtitle_b10_ListView = ad.getListView();
 			ad.show();
 		}
+	}
+
+	/**
+	 * 弹出提示信息.
+	 * 
+	 * @param str
+	 */
+	public void showMess(String str) {
+		Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+	}
+
+	/**
+	 * 弹出提示信息.
+	 * 
+	 * @param strId
+	 */
+	public void showMess(int strId) {
+		Toast.makeText(getApplicationContext(), getText(strId).toString(),
+				Toast.LENGTH_SHORT).show();
+	}
+
+	/**
+	 * 弹出确定提示框. 
+	 * @param listener
+	 */
+	public void confirm(DialogInterface.OnClickListener listener) {
+		new AlertDialog.Builder(this)
+				.setTitle(R.string.app_name)
+				.setMessage(R.string.delete_confirm)
+				.setNegativeButton(R.string.con_cancel,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+
+							}
+						})
+				// 如果是确定退出就退出程序！
+				.setPositiveButton(R.string.con_ok, listener).show();
 	}
 
 	// 点击关于程序的按钮

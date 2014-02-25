@@ -34,7 +34,7 @@
             </TextView>
 
             <Button
-                android:id="@+id/chooseDate_btn"
+                android:id="@+id/diaryDate"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_width"
@@ -55,7 +55,7 @@
             </TextView>
 
             <Button
-                android:id="@+id/chooseTime_btn"
+                android:id="@+id/diaryTime"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_width"
@@ -101,8 +101,8 @@
             <ImageView
                 android:id="@+id/jiami"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:src="@drawable/off_bg"
+                android:layout_height="20dp" 
+                android:src="@drawable/toggle"
                 android:layout_marginLeft="5dp" />
         </TableRow>
     </TableLayout>

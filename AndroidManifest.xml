@@ -27,8 +27,10 @@
         <activity android:name=".NewHomePage" >
         </activity>
         <activity android:name=".FirstPage" >
-        </activity> 
+        </activity>
         <activity android:name=".MoneyList" >
+        </activity>
+        <activity android:name=".DateActivity" >
         </activity>
         <activity
             android:name=".SaveMoney"

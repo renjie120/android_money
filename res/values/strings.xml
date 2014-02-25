@@ -85,6 +85,7 @@
     <string name="more_item7">发送功过数据</string>
     <string name="more_item8">功过列表</string>
     <string name="more_item9">日记列表</string>
+    <string name="more_item10">测试滑轮</string>
     <string name="gongguo_title">功过记录</string>
     <string name="gongguo_list">功过列表</string>
     <string name="diary_list">日记列表</string>
@@ -92,5 +93,6 @@
     <string name="diary_date">发生日期</string>
     <string name="diary_time">发生时间</string>
     <string name="diary_content">日记内容</string>
-    <string name="diary_jiami">日记加密</string> 
+    <string name="diary_jiami">日记加密</string>
+
 </resources>
