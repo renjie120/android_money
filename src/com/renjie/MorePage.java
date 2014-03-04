@@ -55,10 +55,10 @@ import com.renjie.tool.Tool;
  */
 public class MorePage extends BaseActivity implements Runnable, OnClickListener {
 	int[] allMages = { R.drawable.item_1, R.drawable.item_2, R.drawable.item_3 };
-	int[] allitem = { R.string.more_item1, R.string.more_item2,
-			R.string.more_item3, R.string.more_item4, R.string.more_item5,
-			R.string.more_item6, R.string.more_item7, R.string.more_item8,
-			R.string.more_item9, R.string.more_item10 };
+	int[] allitem = { R.string.more_item2, R.string.more_item3,
+			R.string.more_item4, R.string.more_item5, R.string.more_item7,
+			R.string.more_item6, R.string.more_item8, R.string.more_item9,
+			R.string.more_item10, R.string.more_item1 };
 	private MoneyDAO myDb;
 	private Button saveGonguo_btn, saveDiary_btn;
 	String remoteUrl = "http://REMOTEIP:8080/money/superconsole!importMoneyFromPhone.do";
@@ -66,6 +66,7 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 	private int myyear;
 	private int mymonth;
 	private int myday;
+	private int hour, minute;
 	private Button dateBtn;
 	private Button timeBtn;
 	private ImageView jiamiImg;
@@ -164,12 +165,14 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 	 */
 	private void backup() {
 		Intent mailIntent = new Intent(android.content.Intent.ACTION_SEND);
-		String money = myDb.allMoney();
+		String money = myDb.allMoney() + "\n\n\n" + myDb.allDiary() + "\n\n\n"
+				+ myDb.allGongguo();
+
 		mailIntent.setType("plain/text");
-		mailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-				new String[] { "lishuiqing110@163.com" });
-		mailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getToday()
-				+ "money");
+		// mailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
+		// new String[] { "lishuiqing110@163.com" });
+		// mailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getToday()
+		// + "money");
 		mailIntent.putExtra(android.content.Intent.EXTRA_TEXT, money);
 		startActivity(Intent.createChooser(mailIntent,
 				getStr(R.string.sendmoney)));
@@ -183,10 +186,13 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 	public String getToday() {
 		final Calendar today = Calendar.getInstance();
 		myyear = today.get(Calendar.YEAR);
-		mymonth = today.get(Calendar.MONTH) + 1;
+		mymonth = today.get(Calendar.MONTH);
 		myday = today.get(Calendar.DAY_OF_MONTH);
-		return new StringBuilder().append(myyear).append("-").append(mymonth)
-				.append("-").append(myday).toString();
+
+		hour = today.get(Calendar.HOUR_OF_DAY);
+		minute = today.get(Calendar.MINUTE);
+		return new StringBuilder().append(myyear).append("-")
+				.append(mymonth + 1).append("-").append(myday).toString();
 	}
 
 	/**
@@ -254,6 +260,7 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		contentEdit = (EditText) findViewById(R.id.diaryContent);
 		saveDiary_btn = (Button) findViewById(R.id.saveDiary_btn);
 		dateBtn.setText(getToday());
+		timeBtn.setText(hour + ":" + minute);
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
@@ -427,44 +434,44 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 					long arg3) {
 				Intent openUrl = new Intent();
 				switch (arg2) {
-				// 打开配置信息
 				case 0:
-					openUrl.setClass(MorePage.this, SaveConfig.class);
-					startActivity(openUrl);
-					break;
-				case 1:
 					deleteAll();
 					break;
 				// 进行远程保存金额信息
-				case 2:
+				case 1:
 					saveToServer();
 					break;
 				// 备份金额数据
-				case 3:
+				case 2:
 					backup();
 					break;
 				// 功过记录
-				case 4:
+				case 3:
 					gotoGongguo();
+					break;
+				// 发送功过信息
+				case 4:
+					sendGongguo();
 					break;
 				// 私人日记本
 				case 5:
 					gotoDiary();
 					break;
-				// 发送功过信息
-				case 6:
-					sendGongguo();
-					break;
 				// 功过列表
-				case 7:
+				case 6:
 					gongguoList();
 					break;
 				// 日记本列表
-				case 8:
+				case 7:
 					diaryList();
 					break;// 日记本列表
-				case 9:
+				case 8:
 					goHualun();
+					break;
+				// 打开配置信息
+				case 9:
+					openUrl.setClass(MorePage.this, SaveConfig.class);
+					startActivity(openUrl);
 					break;
 				default:
 					break;
@@ -492,7 +499,7 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 			mymonth = monthOfYear;
 			myday = dayOfMonth;
 			dateBtn.setText(new StringBuilder().append(myyear).append("-")
-					.append(mymonth + 1).append("-").append(myday));
+					.append(mymonth+1).append("-").append(myday));
 		}
 	};
 
@@ -502,7 +509,6 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case DATE_DIALOG_ID:
-			System.out.println("myyear=" + myyear + ",mymonth=" + mymonth);
 			return new DatePickerDialog(this, mDateSetListener, myyear,
 					mymonth, myday);
 		}
@@ -585,6 +591,8 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 						.getText().toString(), "0", img.getTag() + "");
 			}
 			showMess(R.string.save_success);
+
+			initFirstPage();
 		}
 		// 点击返回按钮，就退回原来的初始页面布局.
 		else if (v.getId() == R.id.returnbtn) {
@@ -598,6 +606,8 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 			String jiami = jiamiImg.getTag() + "";
 			myDb.insertDiary(date, time, content, "0", jiami);
 			showMess(R.string.save_success);
+
+			initFirstPage();
 		}
 	}
 }

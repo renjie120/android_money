@@ -60,14 +60,15 @@ public class DiaryAdapter extends BaseAdapter {
 
 		HashMap<String, Object> markerItem = getItem(position);
 		if (null != markerItem) {
-			viewHolder.time.setText(markerItem.get("time") + "");
+			String content = markerItem.get("content") + "";
+			viewHolder.time.setText(markerItem.get("time") + "  ("
+					+ content.length() + ")");
 			viewHolder.time.setTag(markerItem.get("sno"));
 			viewHolder.date.setText("" + markerItem.get("date"));
-			String content = markerItem.get("content") + "";
 			if ("true".equals(markerItem.get("jiami"))) {
-				viewHolder.content.setText("已经加密.("+content.length()+")");
+				viewHolder.content.setText("已经加密.");
 			} else
-				viewHolder.content.setText(markerItem.get("content") + "("+content.length()+")");
+				viewHolder.content.setText(content);
 		}
 		return convertView;
 	}
