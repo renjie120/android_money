@@ -113,7 +113,7 @@ public class MoneyList extends BaseActivity {
 		returnBtn.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				Intent openUrl = new Intent();
-				openUrl.setClass(MoneyList.this, SaveMoney.class);
+				openUrl.setClass(MoneyList.this, NewHomePage.class);
 				startActivity(openUrl);
 				MoneyList.this.finish();
 			}

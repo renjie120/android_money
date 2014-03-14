@@ -27,7 +27,7 @@ public class Login extends BaseActivity {
 	private EditText usernameText;
 	private CheckBox showPass;
 	private EditText passwordText;
-	private static boolean debug = true;
+	private static boolean debug = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
