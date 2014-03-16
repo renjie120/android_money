@@ -247,7 +247,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		myyear = today.get(Calendar.YEAR);
 		mymonth = today.get(Calendar.MONTH);
 		myday = today.get(Calendar.DAY_OF_MONTH);
-
+ 
 		hour = today.get(Calendar.HOUR_OF_DAY);
 		minute = today.get(Calendar.MINUTE);
 		return new StringBuilder().append(myyear).append("-")
@@ -330,8 +330,13 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		dateBtn = (Button) findViewById(R.id.chooseTime_btn);
 		saveGonguo_btn = (Button) findViewById(R.id.saveGonguo_btn);
 		table = (TableLayout) findViewById(R.id.gongguo_table);
+<<<<<<< HEAD
 		dateBtn.setText(getToday());
 		addRow();
+=======
+		addRow();
+		dateBtn.setText(getToday()); 
+>>>>>>> d0d34e36d1189f647ed285f7488f14dd0884dc1e
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
