@@ -329,14 +329,9 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		setContentView(R.layout.gongguo_index);
 		dateBtn = (Button) findViewById(R.id.chooseTime_btn);
 		saveGonguo_btn = (Button) findViewById(R.id.saveGonguo_btn);
-		table = (TableLayout) findViewById(R.id.gongguo_table);
-<<<<<<< HEAD
+		table = (TableLayout) findViewById(R.id.gongguo_table); 
 		dateBtn.setText(getToday());
-		addRow();
-=======
-		addRow();
-		dateBtn.setText(getToday()); 
->>>>>>> d0d34e36d1189f647ed285f7488f14dd0884dc1e
+		addRow(); 
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}

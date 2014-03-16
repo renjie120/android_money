@@ -85,17 +85,21 @@ public class MoneyNewAdapter extends BaseAdapter {
 				viewHolder.month.setTag(temp[1]);
 				viewHolder.month.setVisibility(View.GONE);
 				viewHolder.day.setVisibility(View.VISIBLE);
-				viewHolder.day.setText(temp[2]+"日");
+				viewHolder.day.setText(temp[2] + "日");
 				viewHolder.day.setTag(markerItem.getTime());
 			}
-			if ("true".equals(markerItem.getIsClosed())) {
-				viewHolder.arrow.setText("展开");
-				viewHolder.arrow.setTag("closed");
+			if (!"day".equals(markerItem.getLevel())) {
+				if ("true".equals(markerItem.getIsClosed())) {
+					viewHolder.arrow.setText("展开");
+					viewHolder.arrow.setTag("closed");
+				} else {
+					viewHolder.arrow.setText("收缩");
+					viewHolder.arrow.setTag("opened");
+				}
+				viewHolder.arrow.setVisibility(View.VISIBLE);
 			} else {
-				viewHolder.arrow.setText("收缩");
-				viewHolder.arrow.setTag("opened");
+				viewHolder.arrow.setVisibility(View.GONE);
 			}
-			viewHolder.arrow.setVisibility(View.VISIBLE);
 			viewHolder.moneytype.setText(markerItem.getMoneyType());
 			viewHolder.money.setText("" + markerItem.getMoney());
 			viewHolder.money.setTag("" + markerItem.getLevel());
