@@ -278,8 +278,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 			cursor.moveToFirst();
 			maxTime = cursor.getString(0);
 			cursor.close();
-		}
-		System.out.println(maxTime);
+		} 
 		String col2[] = { "count(distinct time)" };
 		Cursor cursor2 = db.query(GONGGUO_TABLENAME, col2, " time < '" + time
 				+ "' and value= 'true' and desc='" + desc + "'"
