@@ -41,9 +41,11 @@ import android.widget.SimpleAdapter;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.renjie.adapter.DiaryAdapter;
 import com.renjie.adapter.GongguoAdapter;
+import com.renjie.adapter.MoneyAdapter;
 import com.renjie.tool.MoneyDAO;
 import com.renjie.tool.Tool;
 
@@ -53,15 +55,18 @@ import com.renjie.tool.Tool;
  * @author Administrator
  * 
  */
-public class MorePage extends BaseActivity implements Runnable, OnClickListener {
+public class MorePage extends BaseActivity implements OnClickListener {
 	int[] allMages = { R.drawable.item_1, R.drawable.item_2, R.drawable.item_3 };
-	int[] allitem = { R.string.more_item2, R.string.more_item3,
-			R.string.more_item4, R.string.more_item5, R.string.more_item7,
-			R.string.more_item6, R.string.more_item8, R.string.more_item9,
-			R.string.more_item10, R.string.more_item1 };
+	int[] allitem = { R.string.more_gongguo, R.string.more_diary,
+			R.string.more_backupall, R.string.more_sendmoney,
+			R.string.more_senddiary, R.string.more_sendgongguo,
+			R.string.more_gongguolist, R.string.more_diarylist,
+			R.string.more_moneylist, R.string.more_config };
 	private MoneyDAO myDb;
 	private Button saveGonguo_btn, saveDiary_btn;
-	String remoteUrl = "http://REMOTEIP:8080/money/superconsole!importMoneyFromPhone.do";
+	String remoteMoneyUrl = "http://REMOTEIP:PORT/money/superconsole!importPhoneMoney.do";
+	String remoteDiaryUrl = "http://REMOTEIP:PORT/money/superconsole!importPhoneDiary.do";
+	String remoteGongguoUrl = "http://REMOTEIP:PORT/money/superconsole!importPhoneGongguo.do";
 	private final static int SUCCESS = 1;
 	private int myyear;
 	private int mymonth;
@@ -73,50 +78,79 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 	private EditText contentEdit;
 	private Button returnbtn;
 	private ListView gongguolist;
-	private ListView diarylist;
+	private ListView diarylist, moneylist;
 	Intent intent;
 	static final int DATE_DIALOG_ID = 0;
 	private TableLayout table;
 
 	/**
-	 * 保存金额数据到远程.
+	 * 调用远程服务端.
+	 * 
+	 * @author Administrator
+	 * 
 	 */
-	public void run() {
-		String result = "未找到主机,请检查网络！";
-		SharedPreferences settings = getSharedPreferences(Tool.CONFIG, 0);
-		String remoteIp = settings.getString(Tool.REMOTEIP, "192.168.1.101");
+	private class SendToServer implements Runnable {
+		private String type;
 
-		String moneys = myDb.allMoney();
-		HttpPost post = new HttpPost(remoteUrl.replace("REMOTEIP", remoteIp));
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		// 将金额字符串放在表单里面的moneys参数里面传递到远程服务器.
-		params.add(new BasicNameValuePair("moneyStr", moneys));
-
-		try {
-			if ("".equals(moneys)) {
-				result = "已经全部保存到服务端！";
-			} else {
-				post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-				HttpResponse response = new DefaultHttpClient().execute(post);
-				if (response.getStatusLine().getStatusCode() == 200) {
-					// 得到服务器端返回的结果字符串.
-					result = EntityUtils.toString(response.getEntity());
-					// 更新保存到远程端之后的状态为1
-					myDb.updateMoneyStatusAfterSave();
-				} else {
-					result = "出现错误，错误代码是:"
-							+ response.getStatusLine().getStatusCode();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			// 在接受完毕了服务器返回的数据之后，调用回调函数弹出返回的信息！
-			Message message = new Message();
-			message.what = MorePage.SUCCESS;
-			message.obj = result;
-			handler.sendMessage(message);
+		public SendToServer(String type) {
+			this.type = type;
 		}
+
+		@Override
+		public void run() {
+			String result = "未找到主机,请检查网络！";
+			SharedPreferences settings = getSharedPreferences(Tool.CONFIG, 0);
+			String remoteIp = settings
+					.getString(Tool.REMOTEIP, "192.168.1.101");
+			String port = settings.getString(Tool.PORT, "9999");
+			String diarys = null;
+			String url = null;
+			if ("money".equals(type)) {
+				diarys = myDb.allMoney();
+				url = remoteMoneyUrl.replace("REMOTEIP", remoteIp).replace(
+						"PORT", port);
+			} else if ("diary".equals(type)) {
+				diarys = myDb.allDiary();
+				url = remoteDiaryUrl.replace("REMOTEIP", remoteIp).replace(
+						"PORT", port);
+			} else if ("gongguo".equals(type)) {
+				diarys = myDb.allGongguo();
+				url = remoteGongguoUrl.replace("REMOTEIP", remoteIp).replace(
+						"PORT", port);
+			}
+			HttpPost post = new HttpPost(url);
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			// 将金额字符串放在表单里面的moneys参数里面传递到远程服务器.
+			params.add(new BasicNameValuePair("moneyStr", diarys));
+
+			try {
+				if ("".equals(diarys)) {
+					result = "已经全部保存到服务端！";
+				} else {
+					post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+					HttpResponse response = new DefaultHttpClient()
+							.execute(post);
+					if (response.getStatusLine().getStatusCode() == 200) {
+						// 得到服务器端返回的结果字符串.
+						result = EntityUtils.toString(response.getEntity());
+						// 更新保存到远程端之后的状态为1
+						myDb.updateMoneyStatusAfterSave();
+					} else {
+						result = "出现错误，错误代码是:"
+								+ response.getStatusLine().getStatusCode();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				// 在接受完毕了服务器返回的数据之后，调用回调函数弹出返回的信息！
+				Message message = new Message();
+				message.what = MorePage.SUCCESS;
+				message.obj = result;
+				handler.sendMessage(message);
+			}
+		}
+
 	}
 
 	private Handler handler = new Handler() {
@@ -147,7 +181,7 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 	/**
 	 * 保存到远程的GAE服务端.
 	 */
-	private void saveToServer() {
+	private void saveMoneyToServer() {
 		myDialog = new ProgressDialog(MorePage.this);
 		myDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);// 设置风格为圆形进度条
 		myDialog.setTitle(getStr(R.string.waitting));// 设置标题
@@ -156,7 +190,36 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		myDialog.show();
 
 		// 启动多线程，进行服务器端的请求。
-		Thread thread = new Thread(MorePage.this);
+		Thread thread = new Thread(new SendToServer("money"));
+		thread.start();
+	}
+
+	/**
+	 * 远程保存功过信息.
+	 */
+	private void saveGonguoToServer() {
+		myDialog = new ProgressDialog(MorePage.this);
+		myDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);// 设置风格为圆形进度条
+		myDialog.setTitle(getStr(R.string.waitting));// 设置标题
+		myDialog.setMessage(getStr(R.string.sendingdata));
+		myDialog.setIndeterminate(false);// 设置进度条是否为不明确
+		myDialog.show();
+
+		// 启动多线程，进行服务器端的请求。
+		Thread thread = new Thread(new SendToServer("gongguo"));
+		thread.start();
+	}
+
+	private void saveDiaryToServer() {
+		myDialog = new ProgressDialog(MorePage.this);
+		myDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);// 设置风格为圆形进度条
+		myDialog.setTitle(getStr(R.string.waitting));// 设置标题
+		myDialog.setMessage(getStr(R.string.sendingdata));
+		myDialog.setIndeterminate(false);// 设置进度条是否为不明确
+		myDialog.show();
+
+		// 启动多线程，进行服务器端的请求。
+		Thread thread = new Thread(new SendToServer("diary"));
 		thread.start();
 	}
 
@@ -169,10 +232,6 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 				+ myDb.allGongguo();
 
 		mailIntent.setType("plain/text");
-		// mailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-		// new String[] { "lishuiqing110@163.com" });
-		// mailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getToday()
-		// + "money");
 		mailIntent.putExtra(android.content.Intent.EXTRA_TEXT, money);
 		startActivity(Intent.createChooser(mailIntent,
 				getStr(R.string.sendmoney)));
@@ -203,14 +262,40 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		// 准备从资源文件中读取数组.
 		String[] gongguoname = res.getStringArray(R.array.gongguo);
 		String[] gongguoId = res.getStringArray(R.array.gongguoId);
+		TableRow tableRow = null;
+		TextView textView = null;
+		TextView count = null;
+		TextView continueTv = null;
+		ImageView img = null;
+		Cursor c = null;
+		int trueC = 0;
+		int falseC = 0;
 		for (int i = 0, j = gongguoname.length; i < j; i++) {
-			TableRow tableRow = new TableRow(this);
-			TextView textView = new TextView(this);
-			ImageView img = new ImageView(this);
+			tableRow = new TableRow(this);
+			textView = new TextView(this);
+			continueTv = new TextView(this);
+			img = new ImageView(this);
+			count = new TextView(this);
 			// 设置id
 			textView.setTag(gongguoId[i]);
 			textView.setTextColor(Color.RED);
 			textView.setText(gongguoname[i]);
+			c = myDb.groupByValue(gongguoId[i]);
+			if (c.getCount() >= 1) {
+				c.moveToFirst();
+				do {
+					if ("true".equals(c.getString(0)))
+						trueC = Integer.parseInt(c.getString(1));
+					else if ("false".equals(c.getString(0)))
+						falseC = Integer.parseInt(c.getString(1));
+				} while (c.moveToNext());
+			}
+			continueTv.setTextColor(Color.GREEN);
+			continueTv.setText("已坚持"
+					+ myDb.continueByValue(dateBtn.getText().toString(),
+							gongguoId[i]));
+			count.setTextColor(Color.RED);
+			count.setText(trueC + "/" + falseC);
 			// 设置默认的为没有点击
 			img.setBackgroundDrawable(res.getDrawable(R.drawable.off_bg));
 			img.setTag("false");
@@ -231,6 +316,8 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 			});
 			tableRow.addView(textView);
 			tableRow.addView(img);
+			tableRow.addView(continueTv);
+			tableRow.addView(count);
 			table.addView(tableRow);
 		}
 	}
@@ -243,8 +330,8 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		dateBtn = (Button) findViewById(R.id.chooseTime_btn);
 		saveGonguo_btn = (Button) findViewById(R.id.saveGonguo_btn);
 		table = (TableLayout) findViewById(R.id.gongguo_table);
-		addRow();
 		dateBtn.setText(getToday());
+		addRow();
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
@@ -261,20 +348,6 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		saveDiary_btn = (Button) findViewById(R.id.saveDiary_btn);
 		dateBtn.setText(getToday());
 		timeBtn.setText(hour + ":" + minute);
-		// 调用绑定事件的私有方法。
-		prepareListener();
-	}
-
-	/**
-	 * 远程保存功过信息.
-	 */
-	private void sendGongguo() {
-		setContentView(R.layout.gongguo_index);
-		dateBtn = (Button) findViewById(R.id.chooseTime_btn);
-		saveGonguo_btn = (Button) findViewById(R.id.saveGonguo_btn);
-		table = (TableLayout) findViewById(R.id.gongguo_table);
-		addRow();
-		dateBtn.setText(getToday());
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
@@ -304,6 +377,19 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 				myDb.deleteDiary(sno);
 				showMess(R.string.delete_success);
 				initDiaryList();
+			}
+		});
+	}
+
+	private void deleteMoney(final long sno) {
+		confirm(new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				myDb.deleteMoney(sno);
+				Toast.makeText(getApplicationContext(),
+						getText(R.string.delete_success).toString(),
+						Toast.LENGTH_SHORT).show();
+				initMoneyList();
 			}
 		});
 	}
@@ -373,6 +459,27 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		diarylist.setAdapter(adapter);
 	}
 
+	private void initMoneyList() {
+		// 生成动态数组，加入数据
+		ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String, Object>>();
+		Cursor allDatas = myDb.selectAllMoney();
+
+		if (allDatas.getCount() >= 1) {
+			allDatas.moveToFirst();
+			do {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("money", allDatas.getString(1));// 图像资源的ID
+				map.put("time", allDatas.getString(2));
+				map.put("sno", allDatas.getString(0));
+				map.put("moneytype", allDatas.getString(4));
+				listItem.add(map);
+			} while (allDatas.moveToNext());
+		}
+		myDb.close();
+		MoneyAdapter adapter = new MoneyAdapter(listItem, this);
+		moneylist.setAdapter(adapter);
+	}
+
 	/**
 	 * 日记本列表.
 	 */
@@ -381,6 +488,15 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		diarylist = (ListView) findViewById(R.id.ListView);
 		returnbtn = (Button) findViewById(R.id.returnbtn);
 		initDiaryList();
+		// 调用绑定事件的私有方法。
+		prepareListener();
+	}
+
+	private void moneyList() {
+		setContentView(R.layout.list_main);
+		moneylist = (ListView) findViewById(R.id.ListView);
+		returnbtn = (Button) findViewById(R.id.returnbtn);
+		initMoneyList();
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
@@ -414,7 +530,7 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 	private void initGridView() {
 		GridView gridview = (GridView) findViewById(R.id.GridView);
 		ArrayList<HashMap<String, Object>> meumList = new ArrayList<HashMap<String, Object>>();
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 9; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("ItemImage", allMages[i % 3]);
 			map.put("ItemText", getText(allitem[i]).toString());
@@ -434,28 +550,28 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 					long arg3) {
 				Intent openUrl = new Intent();
 				switch (arg2) {
+				// 功过记录
 				case 0:
-					deleteAll();
+					gotoGongguo();
 					break;
-				// 进行远程保存金额信息
+				// 私人日记本
 				case 1:
-					saveToServer();
+					gotoDiary();
 					break;
 				// 备份金额数据
 				case 2:
 					backup();
 					break;
-				// 功过记录
+				// 进行远程保存金额信息
 				case 3:
-					gotoGongguo();
+					saveMoneyToServer();
+					break;
+				case 4:
+					saveDiaryToServer();
 					break;
 				// 发送功过信息
-				case 4:
-					sendGongguo();
-					break;
-				// 私人日记本
 				case 5:
-					gotoDiary();
+					saveGonguoToServer();
 					break;
 				// 功过列表
 				case 6:
@@ -466,8 +582,8 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 					diaryList();
 					break;// 日记本列表
 				case 8:
-					goHualun();
-					break;
+					moneyList();
+					break;// 日记本列表
 				// 打开配置信息
 				case 9:
 					openUrl.setClass(MorePage.this, SaveConfig.class);
@@ -499,7 +615,7 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 			mymonth = monthOfYear;
 			myday = dayOfMonth;
 			dateBtn.setText(new StringBuilder().append(myyear).append("-")
-					.append(mymonth+1).append("-").append(myday));
+					.append(mymonth + 1).append("-").append(myday));
 		}
 	};
 
@@ -574,6 +690,16 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 							deleteDiary(Long.parseLong(sno));
 						}
 					});
+		if (moneylist != null)
+			moneylist
+					.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+						public void onItemClick(AdapterView<?> arg0, View arg1,
+								int arg2, long arg3) {
+							String sno = ""
+									+ arg1.findViewById(R.id.time).getTag();
+							deleteMoney(Long.parseLong(sno));
+						}
+					});
 	}
 
 	@Override
@@ -583,6 +709,8 @@ public class MorePage extends BaseActivity implements Runnable, OnClickListener 
 		} else if (v.getId() == R.id.saveGonguo_btn) {
 			String time = dateBtn.getText().toString();
 			int ct = table.getChildCount();
+			// 先删除已经存在的记录.
+			myDb.deleteGonguoByTime(time);
 			for (int i = 0; i < ct; i++) {
 				TableRow row = (TableRow) table.getChildAt(i);
 				TextView textView = (TextView) row.getChildAt(0);

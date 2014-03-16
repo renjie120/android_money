@@ -1,10 +1,8 @@
 package com.renjie;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,9 +12,13 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.renjie.adapter.MoneyAdapter;
+import com.renjie.adapter.DayMoney;
+import com.renjie.adapter.IMoneyData;
+import com.renjie.adapter.MoneyNewAdapter;
+import com.renjie.adapter.MonthMoney;
+import com.renjie.adapter.YearMoney;
 import com.renjie.tool.MoneyDAO;
 
 /**
@@ -29,34 +31,75 @@ public class MoneyList extends BaseActivity {
 	private MoneyDAO myDb;
 	private Button returnBtn;
 	private ListView list;
+	// 生成动态数组，加入数据
+	LinkedList<IMoneyData> listItem;
+	private MoneyNewAdapter adapter;
 
 	private void queryList() {
 		// 实例化数据库
 		myDb = new MoneyDAO(this, MoneyDAO.VERSION);
 
-		// 生成动态数组，加入数据
-		ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String, Object>>();
-		Cursor allDatas = myDb.selectAllMoney();
+		listItem = new LinkedList<IMoneyData>();
+		Cursor allDatas = myDb.selectAlloutMoneyByYear();
 
 		if (allDatas.getCount() >= 1) {
 			allDatas.moveToFirst();
 			do {
-				HashMap<String, Object> map = new HashMap<String, Object>();
-				map.put("money", allDatas.getString(1));// 图像资源的ID
-				map.put("time", allDatas.getString(2));
-				map.put("sno", allDatas.getString(0));
-				map.put("moneytype", allDatas.getString(4));
+				YearMoney map = new YearMoney();
+				map.setYear(allDatas.getString(0));
+				map.setLevel("year");
+				map.setIsClosed("true");
+				map.setMoney(allDatas.getDouble(1));
 				listItem.add(map);
 			} while (allDatas.moveToNext());
 		}
+		allDatas.close();
 		myDb.close();
-		MoneyAdapter adapter = new MoneyAdapter(listItem, this); 
+		adapter = new MoneyNewAdapter(listItem, this);
 		list.setAdapter(adapter);
 	}
 
-	
+	private ArrayList<MonthMoney> queryListByYear(String year) {
+		// 生成动态数组，加入数据
+		ArrayList<MonthMoney> yearListItem = new ArrayList<MonthMoney>();
+		Cursor allDatas = myDb.selectAlloutMoneyByMonth(year);
+		if (allDatas.getCount() >= 1) {
+			allDatas.moveToFirst();
+			MonthMoney map = new MonthMoney();
+			do {
+				map.setMonth(year + "," + allDatas.getString(0));// 图像资源的ID
+				map.setMoney(allDatas.getDouble(1));
+				map.setIsClosed("true");
+				map.setLevel("month");
+				yearListItem.add(map);
+			} while (allDatas.moveToNext());
+			return yearListItem;
+		}
+		return null;
+	}
+
+	private ArrayList<DayMoney> queryListByYearAndMonth(String year,
+			String month) {
+		// 生成动态数组，加入数据
+		ArrayList<DayMoney> yearListItem = new ArrayList<DayMoney>();
+		Cursor allDatas = myDb.selectAlloutMoneyByMonthAndDay(year, month);
+		if (allDatas.getCount() >= 1) {
+			allDatas.moveToFirst();
+			DayMoney map = new DayMoney();
+			do {
+				map.setDay(year + "," + month + "," + allDatas.getString(0));// 图像资源的ID
+				map.setMoney(allDatas.getDouble(1));
+				map.setIsClosed("true");
+				map.setLevel("day");
+				yearListItem.add(map);
+			} while (allDatas.moveToNext());
+			return yearListItem;
+		}
+		return null;
+	}
+
 	public void onResume() {
-		super.onResume(); 
+		super.onResume();
 		queryList();
 	}
 
@@ -70,45 +113,40 @@ public class MoneyList extends BaseActivity {
 		returnBtn = (Button) findViewById(R.id.returnbtn);
 
 		list = (ListView) findViewById(R.id.ListView);
-		 
 
-		// final ArrayList<HashMap<String, Object>> tempList = listItem;
-		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				String sno = "" + arg1.findViewById(R.id.time).getTag(); 
-				deleteMoney(Long.parseLong(sno));
-			}
-		});
-		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
 
-	private void deleteMoney(final long sno) {
-		new AlertDialog.Builder(this)
-				.setTitle(R.string.app_name)
-				.setMessage(R.string.delete_confirm)
-				.setNegativeButton(R.string.con_cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-
-							}
-						})
-				// 如果是确定退出就退出程序！
-				.setPositiveButton(R.string.con_ok,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-								myDb.deleteMoney(sno); 
-								Toast.makeText(getApplicationContext(),  getText(R.string.delete_success).toString() ,
-									     Toast.LENGTH_SHORT).show(); 
-								queryList();
-							}
-						}).show();
-	}
-
 	protected void prepareListener() {
+		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				TextView tv = (TextView) arg1.findViewById(R.id.arrow);
+				String isClosed = "" + tv.getTag();
+				String level = "" + arg1.findViewById(R.id.money).getTag(); 
+				if ("closed".equals(isClosed)) { 
+					if ("year".equals(level)) {
+						String year = arg1.findViewById(R.id.year).getTag()
+								+ "";
+						ArrayList<MonthMoney> thisYearMonthData = queryListByYear(year);
+						listItem.addAll(thisYearMonthData);
+
+						adapter.notifyDataSetChanged();
+					} else if ("month".equals(level)) {
+						String year = arg1.findViewById(R.id.year).getTag()
+								+ "";
+						String month = arg1.findViewById(R.id.month).getTag()
+								+ "";
+						ArrayList<DayMoney> thisYearMonthData = queryListByYearAndMonth(
+								year, month);
+						System.out.println(year + "," + month + "-----查询月份");
+						listItem.addAll(thisYearMonthData);
+
+						adapter.notifyDataSetChanged();
+					}
+				}
+			}
+		});
 		// 设计返回按钮
 		returnBtn.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {

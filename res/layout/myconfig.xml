@@ -94,6 +94,25 @@
                 android:id="@+id/remoteIp"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
+                android:layout_weight="1" 
+                android:textSize="18sp" >
+            </EditText>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/config_port"
+                style="@style/textstyle1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/config_remoteport" >
+            </TextView>
+
+            <EditText
+                android:id="@+id/remotePort"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="@string/config_inremoteIp"
                 android:textSize="18sp" >

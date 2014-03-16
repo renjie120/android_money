@@ -1,11 +1,11 @@
 package com.renjie.tool;
 
-import java.util.Calendar;
 
 public class Tool {
 	public static final String CONFIG = "CONFIG_USER";
 	public static final String USERNAME = "username";
 	public static final String REMOTEIP = "remoteip";
+	public static final String PORT = "port";
 	public static final String PASS = "pass";
 
 	

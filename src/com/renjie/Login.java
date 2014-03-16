@@ -45,8 +45,8 @@ public class Login extends BaseActivity {
 		// 调用绑定事件的私有方法。
 		prepareListener();
 
-		if (debug)
-			alert("测试状态！");
+//		if (debug)
+//			alert("测试状态！");
 	}
 
 	protected void prepareListener() {

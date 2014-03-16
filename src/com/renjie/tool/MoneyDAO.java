@@ -7,17 +7,22 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class MoneyDAO extends SQLiteOpenHelper {
-	public static final int VERSION = 3;
+	public static final int VERSION = 4;
 	/********** 下面是金额操作的相关表和字段 ************/
 	public static final String MONEYID = "sno";
 	public static final String MONEY = "money";
 	public static final String MONEYTIME = "time";
 	public static final String MONEYDESC = "desc";
+	public static final String MONEY_M = "month";
+	public static final String MONEY_Y = "year";
+	public static final String MONEY_D = "day";
+	// 收入还是支出
+	public static final String MONEY_TP = "tp";
 	public static final String MONEYTYPE = "type";
 	public static final String MONEYSTATUS = "status";
 	private static final String MONEY_TABLENAME = "money_t";
 	private static final String DB_CREATE_MONEY = "create table money_t  (sno integer primary key autoincrement,money text,"
-			+ "time text,desc text,type text,status text);";
+			+ "time text,desc text,type text,status text,year text,month text,day text,tp text);";
 
 	/********** 下面是功过相关的表和字段. *************/
 	public static final String GONGGUO_SNO = "sno";
@@ -77,6 +82,53 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	}
 
 	/**
+	 * 按年份查询支出的金额
+	 * 
+	 * @return
+	 */
+	public Cursor selectAlloutMoneyByYear() {
+		SQLiteDatabase db = this.getReadableDatabase();
+		String[] cols = { MONEY_Y, "sum(money)" };
+		String where = " tp=? ";
+		// tablename columns, selection, selectionArgs, groupBy, having, orderBy
+		Cursor cursor = db.query(MONEY_TABLENAME, cols, where,
+				new String[] { "0" }, MONEY_Y, null, " year desc");
+		return cursor;
+	}
+
+	/**
+	 * 得到一个年里面的全部月份的数据统计.
+	 * 
+	 * @param year
+	 * @return
+	 */
+	public Cursor selectAlloutMoneyByMonth(String year) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		String[] cols = { MONEY_M, "sum(money)" };
+		String where = " tp=? and year=? ";
+		// tablename columns, selection, selectionArgs, groupBy, having, orderBy
+		Cursor cursor = db.query(MONEY_TABLENAME, cols, where, new String[] {
+				"0", year }, MONEY_M, null, " month");
+		return cursor;
+	}
+
+	/**
+	 * 按月统计消费金额
+	 * @param year
+	 * @param month
+	 * @return
+	 */
+	public Cursor selectAlloutMoneyByMonthAndDay(String year, String month) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		String[] cols = { MONEY_D, "sum(money)" };
+		String where = " tp=? and year=? and month=? ";
+		// tablename columns, selection, selectionArgs, groupBy, having, orderBy
+		Cursor cursor = db.query(MONEY_TABLENAME, cols, where, new String[] {
+				"0", year, month }, MONEY_D, null, " day");
+		return cursor;
+	}
+
+	/**
 	 * 保存到远程之后修改状态码.
 	 */
 	public void updateMoneyStatusAfterSave() {
@@ -120,13 +172,18 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	 * @return
 	 */
 	public long insertMoney(String money, String time, String desc,
-			String type, String status) {
+			String type, String status, String tp) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues initValues = new ContentValues();
 		initValues.put(MONEYDESC, desc);
 		initValues.put(MONEYTIME, time);
 		initValues.put(MONEY, money);
 		initValues.put(MONEYSTATUS, status);
+		String[] temp = time.split("-");
+		initValues.put(MONEY_M, temp[1]);
+		initValues.put(MONEY_Y, temp[0]);
+		initValues.put(MONEY_D, temp[2]);
+		initValues.put(MONEY_TP, tp);
 		initValues.put(MONEYTYPE, type);
 		// 表名，允许插入的空置，参数
 		long rr = db.insert(MONEY_TABLENAME, MONEYID, initValues);
@@ -188,6 +245,56 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	}
 
 	/**
+	 * 统计一个功过类型的是否数量.
+	 * 
+	 * @param desc
+	 * @return
+	 */
+	public Cursor groupByValue(String desc) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		String col[] = { GONGGUO_VALUE, "count(time) " };
+		String table = " (select time,value from gongguo_t where desc= '"
+				+ desc + "') ";
+		Cursor cursor = db.query(table, col, null, null, "value", null, null);
+		return cursor;
+	}
+
+	/**
+	 * 计算一个功过类型的之前是的数量.
+	 * 
+	 * @param desc
+	 * @return
+	 */
+	public int continueByValue(String time, String desc) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		String col[] = { "max(time)" };
+		Cursor cursor = db.query(GONGGUO_TABLENAME, col, " time < '" + time
+				+ "' and value= 'false' and desc='" + desc + "'", null, null,
+				null, null);
+		String maxTime = null;
+		System.out.println("cursor.getCount()==" + cursor.getCount() + ",time="
+				+ time);
+		if (cursor.getCount() > 0) {
+			cursor.moveToFirst();
+			maxTime = cursor.getString(0);
+			cursor.close();
+		}
+		System.out.println(maxTime);
+		String col2[] = { "count(distinct time)" };
+		Cursor cursor2 = db.query(GONGGUO_TABLENAME, col2, " time < '" + time
+				+ "' and value= 'true' and desc='" + desc + "'"
+				+ (maxTime == null ? "" : " and time >= '" + maxTime + "'"),
+				null, null, null, null);
+		int result = 0;
+		if (cursor2.getCount() > 0) {
+			cursor2.moveToFirst();
+			result = cursor2.getInt(0);
+			cursor2.close();
+		}
+		return result;
+	}
+
+	/**
 	 * 保存到远程之后修改状态码.
 	 */
 	public void updateGonguoStatusAfterSave() {
@@ -217,6 +324,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 					+ cur.getString(2) + "$," + cur.getString(3) + "$,"
 					+ cur.getString(4) + "$;");
 		} while (cur.moveToNext());
+		cur.close();
 		sb = sb.delete(sb.length() - 2, sb.length());
 		return sb.toString();
 	}
@@ -303,7 +411,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 		db.execSQL("update " + DIARY_TABLENAME
 				+ "  set status =? where status=?", new Object[] { "1", "0" });
-	} 
+	}
 
 	/**
 	 * 返回全部的功过组成的字符串.
@@ -318,6 +426,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 				null, null, null, null);
 		StringBuilder sb = new StringBuilder();
 		if (cur.getCount() < 1) {
+			cur.close();
 			return "";
 		}
 		cur.moveToFirst();
@@ -326,6 +435,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 					+ cur.getString(2) + "$," + cur.getString(3) + "$,"
 					+ cur.getString(4) + "$;");
 		} while (cur.moveToNext());
+		cur.close();
 		sb = sb.delete(sb.length() - 2, sb.length());
 		return sb.toString();
 	}
@@ -379,6 +489,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 
 	/**
 	 * 更新日志信息.
+	 * 
 	 * @param id
 	 * @param date
 	 * @param time

@@ -53,6 +53,7 @@ public class SaveMoney extends BaseActivity {
 	Intent intent;
 	static final int DATE_DIALOG_ID = 0;
 	private MoneyDAO myDb;
+	private String[] inTypes = { "收入", "奖金", "工资", "报销差补" };
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -110,6 +111,14 @@ public class SaveMoney extends BaseActivity {
 		SaveMoney.this.finish();
 	}
 
+	private int getIndexIn(String str) {
+		for (int i = 0, j = inTypes.length; i < j; i++)
+			if (inTypes[i].equals(str)) {
+				return i;
+			}
+		return -1;
+	}
+
 	/**
 	 * 设置按钮的单击事件
 	 */
@@ -128,21 +137,20 @@ public class SaveMoney extends BaseActivity {
 					alert(getText(R.string.save_failure).toString());
 					return;
 				}
-				myDb.insertMoney(money, time, moneyDesc, moneySort, "0");
-				showMess(R.string.save_success); 
+				//收入
+				if (getIndexIn(moneySort) > 0)
+					myDb.insertMoney(money, time, moneyDesc, moneySort, "0",
+							"1");
+				//支出
+				else
+					myDb.insertMoney(money, time, moneyDesc, moneySort, "0",
+							"0");
+				showMess(R.string.save_success);
 				// alert();
 				getMoneyText.setText("");
 				getMoneyDescText.setText("");
 			}
 		});
-		// backBtn.setOnClickListener(new OnClickListener() {
-		// public void onClick(View v) {
-		// Intent openUrl = new Intent();
-		// openUrl.setClass(SaveMoney.this, HomePage.class);
-		// startActivity(openUrl);
-		// SaveMoney.this.finish();
-		// }
-		// });
 
 		/**
 		 * 打开日期
