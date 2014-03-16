@@ -247,7 +247,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		myyear = today.get(Calendar.YEAR);
 		mymonth = today.get(Calendar.MONTH);
 		myday = today.get(Calendar.DAY_OF_MONTH);
- 
+
 		hour = today.get(Calendar.HOUR_OF_DAY);
 		minute = today.get(Calendar.MINUTE);
 		return new StringBuilder().append(myyear).append("-")
@@ -268,9 +268,10 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		TextView continueTv = null;
 		ImageView img = null;
 		Cursor c = null;
-		int trueC = 0;
-		int falseC = 0;
+
 		for (int i = 0, j = gongguoname.length; i < j; i++) {
+			int trueC = 0;
+			int falseC = 0;
 			tableRow = new TableRow(this);
 			textView = new TextView(this);
 			continueTv = new TextView(this);
@@ -284,12 +285,14 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			if (c.getCount() >= 1) {
 				c.moveToFirst();
 				do {
+					System.out.println(c.getString(0) + "---c.getString(0)");
 					if ("true".equals(c.getString(0)))
 						trueC = Integer.parseInt(c.getString(1));
 					else if ("false".equals(c.getString(0)))
 						falseC = Integer.parseInt(c.getString(1));
 				} while (c.moveToNext());
 			}
+			c.close();
 			continueTv.setTextColor(Color.GREEN);
 			continueTv.setText("已坚持"
 					+ myDb.continueByValue(dateBtn.getText().toString(),
@@ -329,9 +332,9 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		setContentView(R.layout.gongguo_index);
 		dateBtn = (Button) findViewById(R.id.chooseTime_btn);
 		saveGonguo_btn = (Button) findViewById(R.id.saveGonguo_btn);
-		table = (TableLayout) findViewById(R.id.gongguo_table); 
+		table = (TableLayout) findViewById(R.id.gongguo_table);
 		dateBtn.setText(getToday());
-		addRow(); 
+		addRow();
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
@@ -428,6 +431,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 				listItem.add(map);
 			} while (allGongguo.moveToNext());
 		}
+		allGongguo.close();
 		myDb.close();
 		GongguoAdapter adapter = new GongguoAdapter(listItem, this);
 		gongguolist.setAdapter(adapter);

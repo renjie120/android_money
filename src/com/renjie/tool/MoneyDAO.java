@@ -114,6 +114,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 
 	/**
 	 * 按月统计消费金额
+	 * 
 	 * @param year
 	 * @param month
 	 * @return
@@ -255,6 +256,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 		String col[] = { GONGGUO_VALUE, "count(time) " };
 		String table = " (select time,value from gongguo_t where desc= '"
 				+ desc + "') ";
+		System.out.println("desc=" + desc);
 		Cursor cursor = db.query(table, col, null, null, "value", null, null);
 		return cursor;
 	}
@@ -271,14 +273,12 @@ public class MoneyDAO extends SQLiteOpenHelper {
 		Cursor cursor = db.query(GONGGUO_TABLENAME, col, " time < '" + time
 				+ "' and value= 'false' and desc='" + desc + "'", null, null,
 				null, null);
-		String maxTime = null;
-		System.out.println("cursor.getCount()==" + cursor.getCount() + ",time="
-				+ time);
+		String maxTime = null; 
 		if (cursor.getCount() > 0) {
 			cursor.moveToFirst();
 			maxTime = cursor.getString(0);
-			cursor.close();
-		} 
+		}
+		cursor.close();
 		String col2[] = { "count(distinct time)" };
 		Cursor cursor2 = db.query(GONGGUO_TABLENAME, col2, " time < '" + time
 				+ "' and value= 'true' and desc='" + desc + "'"
@@ -288,8 +288,8 @@ public class MoneyDAO extends SQLiteOpenHelper {
 		if (cursor2.getCount() > 0) {
 			cursor2.moveToFirst();
 			result = cursor2.getInt(0);
-			cursor2.close();
 		}
+		cursor2.close();
 		return result;
 	}
 
