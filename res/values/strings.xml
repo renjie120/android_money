@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="menu_settings">配置</string>
     <string name="app_name">记账V</string>
     <string name="main_shouye">首页</string>
     <string name="main_diary">发送</string>
@@ -42,6 +43,8 @@
     <string name="con_ok">确定</string>
     <string name="con_see_button">查看全部</string>
     <string name="con_return">返回</string>
+    <string name="con_returnTop">顶级</string>
+    <string name="con_back">上级</string>
     <string name="con_statistics">统计分析</string>
     <string name="con_statistics_title">你选择的统计分析是：</string>
     <string name="con_cancel">取消</string>
@@ -79,13 +82,14 @@
     <string name="senddiary">发送日记数据</string>
     <string name="sendgongguo">发送功过数据</string>
     <string name="more_config">配置信息</string>
+    <string name="more_tree">树形结构</string>
     <string name="more_deletemoney">删除金额</string>
-    <string name="more_backupall">备份数据</string>
+    <string name="more_backupall">备份全部数据</string>
     <string name="more_gongguo">功过记录</string>
     <string name="more_diary">私人日记</string>
-    <string name="more_sendgongguo">发送功过数据</string>
-    <string name="more_sendmoney">远程发送金额</string>
-    <string name="more_senddiary">发送日记数据</string>
+    <string name="more_sendgongguo">同步功过数据</string>
+    <string name="more_sendmoney">同步金额数据</string>
+    <string name="more_senddiary">同步日记数据</string>
     <string name="more_gongguolist">功过列表</string>
     <string name="more_diarylist">日记列表</string>
     <string name="more_moneylist">金额列表</string>

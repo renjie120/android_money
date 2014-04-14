@@ -130,6 +130,25 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	}
 
 	/**
+	 * 查询某一天的具体的数据.
+	 * 
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @return
+	 */
+	public Cursor selectAlloutMoneyByMonthAndDayDetail(String year,
+			String month, String day) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		String[] cols = { MONEYID, MONEY, MONEYTIME, MONEYTYPE };
+		String where = " tp=? and year=? and month=?  and day=?";
+		// tablename columns, selection, selectionArgs, groupBy, having, orderBy
+		Cursor cursor = db.query(MONEY_TABLENAME, cols, where, new String[] {
+				"0", year, month, day }, null, null, MONEYID);
+		return cursor;
+	}
+
+	/**
 	 * 保存到远程之后修改状态码.
 	 */
 	public void updateMoneyStatusAfterSave() {
@@ -273,7 +292,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 		Cursor cursor = db.query(GONGGUO_TABLENAME, col, " time < '" + time
 				+ "' and value= 'false' and desc='" + desc + "'", null, null,
 				null, null);
-		String maxTime = null; 
+		String maxTime = null;
 		if (cursor.getCount() > 0) {
 			cursor.moveToFirst();
 			maxTime = cursor.getString(0);

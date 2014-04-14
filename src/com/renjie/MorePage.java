@@ -61,7 +61,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			R.string.more_backupall, R.string.more_sendmoney,
 			R.string.more_senddiary, R.string.more_sendgongguo,
 			R.string.more_gongguolist, R.string.more_diarylist,
-			R.string.more_moneylist, R.string.more_config };
+			R.string.more_moneylist, R.string.more_config, R.string.more_tree };
 	private MoneyDAO myDb;
 	private Button saveGonguo_btn, saveDiary_btn;
 	String remoteMoneyUrl = "http://REMOTEIP:PORT/money/superconsole!importPhoneMoney.do";
@@ -134,7 +134,13 @@ public class MorePage extends BaseActivity implements OnClickListener {
 						// 得到服务器端返回的结果字符串.
 						result = EntityUtils.toString(response.getEntity());
 						// 更新保存到远程端之后的状态为1
-						myDb.updateMoneyStatusAfterSave();
+						if ("money".equals(type)) {
+							myDb.updateMoneyStatusAfterSave();
+						} else if ("diary".equals(type)) {
+							myDb.updateDiaryStatusAfterSave();
+						} else if ("gongguo".equals(type)) {
+							myDb.updateGonguoStatusAfterSave();
+						}
 					} else {
 						result = "出现错误，错误代码是:"
 								+ response.getStatusLine().getStatusCode();
@@ -497,7 +503,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	}
 
 	private void moneyList() {
-		setContentView(R.layout.list_main);
+		setContentView(R.layout.list_main_old);
 		moneylist = (ListView) findViewById(R.id.ListView);
 		returnbtn = (Button) findViewById(R.id.returnbtn);
 		initMoneyList();
@@ -534,7 +540,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	private void initGridView() {
 		GridView gridview = (GridView) findViewById(R.id.GridView);
 		ArrayList<HashMap<String, Object>> meumList = new ArrayList<HashMap<String, Object>>();
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < 11; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("ItemImage", allMages[i % 3]);
 			map.put("ItemText", getText(allitem[i]).toString());
@@ -591,6 +597,10 @@ public class MorePage extends BaseActivity implements OnClickListener {
 				// 打开配置信息
 				case 9:
 					openUrl.setClass(MorePage.this, SaveConfig.class);
+					startActivity(openUrl);
+					break;
+				case 10:
+					openUrl.setClass(MorePage.this, TreeListDemoActivity.class);
 					startActivity(openUrl);
 					break;
 				default:

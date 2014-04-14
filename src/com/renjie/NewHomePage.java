@@ -50,7 +50,7 @@ public class NewHomePage extends TabActivity implements OnCheckedChangeListener 
 		tab1.setIndicator(TAB_ITEM_1).setContent(
 				new Intent(NewHomePage.this, SaveMoney.class));
 		tab2.setIndicator(TAB_ITEM_3).setContent(
-				new Intent(NewHomePage.this, MoneyList.class));
+				new Intent(NewHomePage.this, MoneyList2.class));
 		tab3.setIndicator(TAB_ITEM_2).setContent(
 				new Intent(NewHomePage.this, MorePage.class)); 
 		tabHost.addTab(tab1);

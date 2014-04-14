@@ -11,6 +11,11 @@ import android.widget.TextView;
 
 import com.renjie.R;
 
+/**
+ * 树形级别的listview.
+ * @author 130126
+ *
+ */
 public class MoneyNewAdapter extends BaseAdapter {
 	private LinkedList<IMoneyData> data;// 用于接收传递过来的Context对象
 	private Context context;
@@ -46,7 +51,7 @@ public class MoneyNewAdapter extends BaseAdapter {
 		if (null == convertView) {
 			viewHolder = new ViewHolder();
 			LayoutInflater mInflater = LayoutInflater.from(context);
-			convertView = mInflater.inflate(R.layout.money_list2, null);
+			convertView = mInflater.inflate(R.layout.list_main_item, null);
 
 			viewHolder.year = (TextView) convertView.findViewById(R.id.year);
 			viewHolder.month = (TextView) convertView.findViewById(R.id.month);
