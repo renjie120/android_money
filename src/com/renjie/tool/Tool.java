@@ -1,15 +1,30 @@
 package com.renjie.tool;
 
-
 public class Tool {
 	public static final String CONFIG = "CONFIG_USER";
 	public static final String USERNAME = "username";
 	public static final String REMOTEIP = "remoteip";
 	public static final String PORT = "port";
 	public static final String PASS = "pass";
+	public static final int DIARY_TYPE_COMMON = 0;
+	public static final int DIARY_TYPE_LICAI = 1;
+	public static final int DIARY_TYPE_PLAN = 2;
+	public static final String[] DIARY_TYPES = { "普通", "理财", "计划" };
+	public static final String[] inTypes = { "收入", "奖金", "工资", "报销差补" };
 
+	/**
+	 * 是否是收入的金额类型.
+	 * @param str
+	 * @return
+	 */
+	public static boolean isInType(String str) {
+		for (int i = 0, j = Tool.inTypes.length; i < j; i++)
+			if (str.equals(Tool.inTypes[i])) {
+				return true;
+			}
+		return false;
+	}
 	
-
 	/**
 	 * 验证身份证号校验位的方法.
 	 * 

@@ -12,6 +12,7 @@
     <string name="licaixitongtitle">理财系统</string>
     <string name="timestr">收支日期</string>
     <string name="timestr2">记录日期</string>
+    <string name="diary_type">日记类别</string>
     <string name="moneystr">收支金额</string>
     <string name="sortstr">收支类别</string>
     <string name="moneydesc">收支说明</string>
@@ -54,6 +55,7 @@
     <string name="con_quitStr">确定退出程序么？</string>
     <string name="con_leave">离开</string>
     <string name="con_sort_prompt">请选择收支类别</string>
+    <string name="con_diarysort_prompt">请选择日记类别</string>
     <string name="con_chooseDate">点击选择日期</string>
     <string name="dialog_menu_item_0">二维码名片</string>
     <string name="dialog_menu_item_1">普通名片</string>
@@ -102,5 +104,8 @@
     <string name="diary_time">发生时间</string>
     <string name="diary_content">日记内容</string>
     <string name="diary_jiami">日记加密</string>
+    <string name="gongguo_plan">计    划</string>
+    <string name="gongguo_planmake">制定计划</string>
+    <string name="gongguo_toPlan">请制定计划</string>
 
 </resources>

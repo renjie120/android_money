@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class MoneyDAO extends SQLiteOpenHelper {
-	public static final int VERSION = 4;
+	public static final int VERSION = 5;
 	/********** 下面是金额操作的相关表和字段 ************/
 	public static final String MONEYID = "sno";
 	public static final String MONEY = "money";
@@ -43,10 +43,11 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	public static final String DIARY_JIAMI = "jiami";
 	public static final String DIARY_CONTENT = "content";
 	public static final String DIARY_STATUS = "status";
+	public static final String DIARY_TYPE = "tp";
 	private static final String DIARY_TABLENAME = "diary_t";
 
 	private static final String DB_CREATE_DIARY = "create table diary_t  (sno integer primary key autoincrement,time text,"
-			+ "date text,jiami text,content text,status text);";
+			+ "date text,jiami text,content text,status text,tp text);";
 
 	public MoneyDAO(Context context, int dbVersion) {
 		super(context, "moneydb", null, dbVersion);
@@ -275,7 +276,6 @@ public class MoneyDAO extends SQLiteOpenHelper {
 		String col[] = { GONGGUO_VALUE, "count(time) " };
 		String table = " (select time,value from gongguo_t where desc= '"
 				+ desc + "') ";
-		System.out.println("desc=" + desc);
 		Cursor cursor = db.query(table, col, null, null, "value", null, null);
 		return cursor;
 	}
@@ -439,7 +439,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	public String allDiary() {
 		SQLiteDatabase db = this.getReadableDatabase();
 		String col[] = { DIARY_SNO, DIARY_DATE, DIARY_TIME, DIARY_JIAMI,
-				DIARY_CONTENT };
+				DIARY_CONTENT, DIARY_TYPE };
 		Cursor cur = db.query(DIARY_TABLENAME, col, GONGGUO_STATUS + "='0'",
 				null, null, null, null);
 		StringBuilder sb = new StringBuilder();
@@ -451,7 +451,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 		do {
 			sb.append(cur.getString(0) + "$," + cur.getString(1) + "$,"
 					+ cur.getString(2) + "$," + cur.getString(3) + "$,"
-					+ cur.getString(4) + "$;");
+					+ cur.getString(4) + "$," + cur.getString(5) + "$;");
 		} while (cur.moveToNext());
 		cur.close();
 		sb = sb.delete(sb.length() - 2, sb.length());
@@ -469,7 +469,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	 * @return
 	 */
 	public long insertDiary(String date, String time, String content,
-			String status, String jiami) {
+			String status, String jiami, String type) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues initValues = new ContentValues();
 		initValues.put(DIARY_STATUS, status);
@@ -477,6 +477,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 		initValues.put(DIARY_TIME, time);
 		initValues.put(DIARY_JIAMI, jiami);
 		initValues.put(DIARY_CONTENT, content);
+		initValues.put(DIARY_TYPE, type);
 		// 表名，允许插入的空置，参数
 		long rr = db.insert(DIARY_TABLENAME, DIARY_SNO, initValues);
 		db.close();

@@ -1,7 +1,11 @@
 package com.renjie;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,6 +42,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -82,6 +87,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	Intent intent;
 	static final int DATE_DIALOG_ID = 0;
 	private TableLayout table;
+	private SharedPreferences settings;
 
 	/**
 	 * 调用远程服务端.
@@ -99,7 +105,6 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		@Override
 		public void run() {
 			String result = "未找到主机,请检查网络！";
-			SharedPreferences settings = getSharedPreferences(Tool.CONFIG, 0);
 			String remoteIp = settings
 					.getString(Tool.REMOTEIP, "192.168.1.101");
 			String port = settings.getString(Tool.PORT, "9999");
@@ -291,7 +296,6 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			if (c.getCount() >= 1) {
 				c.moveToFirst();
 				do {
-					System.out.println(c.getString(0) + "---c.getString(0)");
 					if ("true".equals(c.getString(0)))
 						trueC = Integer.parseInt(c.getString(1));
 					else if ("false".equals(c.getString(0)))
@@ -331,19 +335,52 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		}
 	}
 
+	private EditText plan;
+	private TextView planShow;
+
 	/**
 	 * 显示功过录的界面.
 	 */
 	private void gotoGongguo() {
 		setContentView(R.layout.gongguo_index);
 		dateBtn = (Button) findViewById(R.id.chooseTime_btn);
+		plan = (EditText) findViewById(R.id.plan);
+		planShow = (TextView) findViewById(R.id.plan_show);
 		saveGonguo_btn = (Button) findViewById(R.id.saveGonguo_btn);
 		table = (TableLayout) findViewById(R.id.gongguo_table);
 		dateBtn.setText(getToday());
+		String lastPlan = settings.getString(afterAnyDay(new Date(), -1)
+				+ "plan", "无");
+		planShow.setText(lastPlan);
 		addRow();
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
+
+	public static final long ONEDAYMILLISECONDS = 86400000;
+
+	public static String afterAnyDay(Date dd, int days) {
+		Date d = afterDate(dd, days);
+		GregorianCalendar ca = new GregorianCalendar();
+		ca.setTime(d);
+		int y = ca.get(Calendar.YEAR);
+		int m = ca.get(Calendar.MONTH);
+		int ddd = ca.get(Calendar.DAY_OF_MONTH);
+		return new StringBuilder().append(y).append("-").append(m + 1)
+				.append("-").append(ddd).toString();
+	}
+
+	public static Date afterDate(Date date, int days) {
+		if (date == null)
+			return null;
+		Date newDate = new Date();
+		long tp = date.getTime();
+		tp = tp + days * ONEDAYMILLISECONDS;
+		newDate.setTime(tp);
+		return newDate;
+	}
+
+	private Spinner diaryType;
 
 	/**
 	 * 跳转到日记本程序.
@@ -354,9 +391,12 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		timeBtn = (Button) findViewById(R.id.diaryTime);
 		jiamiImg = (ImageView) findViewById(R.id.jiami);
 		contentEdit = (EditText) findViewById(R.id.diaryContent);
+		diaryType = (Spinner) findViewById(R.id.diary_tp);
 		saveDiary_btn = (Button) findViewById(R.id.saveDiary_btn);
 		dateBtn.setText(getToday());
 		timeBtn.setText(hour + ":" + minute);
+		createSimpleSipnner(diaryType, R.array.diarytype);
+
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
@@ -461,6 +501,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 				map.put("status", allDiary.getString(5));
 				map.put("content", allDiary.getString(4));
 				map.put("jiami", allDiary.getString(3));
+				map.put("type", allDiary.getString(6));
 				listItem.add(map);
 			} while (allDiary.moveToNext());
 		}
@@ -613,6 +654,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		settings = getSharedPreferences(Tool.CONFIG, 0);
 		initFirstPage();
 		// 实例化数据库
 		myDb = new MoneyDAO(this, MoneyDAO.VERSION);
@@ -628,10 +670,28 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			myyear = year;
 			mymonth = monthOfYear;
 			myday = dayOfMonth;
-			dateBtn.setText(new StringBuilder().append(myyear).append("-")
-					.append(mymonth + 1).append("-").append(myday));
+			String d = new StringBuilder().append(myyear).append("-")
+					.append(mymonth + 1).append("-").append(myday).toString();
+			dateBtn.setText(d);
+
+			if (planShow != null) {
+				String lastPlan = settings.getString(
+						afterAnyDay(getDate(d), -1) + "plan", "无");
+				planShow.setText(lastPlan);
+			}
 		}
 	};
+
+	public static Date getDate(String dateStr) {
+		SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		try {
+			date = formatter2.parse(dateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return date;
+	}
 
 	/**
 	 * 自定义弹出日期选择框
@@ -720,7 +780,9 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	public void onClick(View v) {
 		if (v.getId() == R.id.chooseTime_btn || v.getId() == R.id.diaryDate) {
 			showDialog(DATE_DIALOG_ID);
-		} else if (v.getId() == R.id.saveGonguo_btn) {
+		}
+		// 保存功过信息.
+		else if (v.getId() == R.id.saveGonguo_btn) {
 			String time = dateBtn.getText().toString();
 			int ct = table.getChildCount();
 			// 先删除已经存在的记录.
@@ -733,7 +795,13 @@ public class MorePage extends BaseActivity implements OnClickListener {
 						.getText().toString(), "0", img.getTag() + "");
 			}
 			showMess(R.string.save_success);
-
+			// String lastPlan = settings.getString(time+"plan", "无");
+			// 保存当前的计划.
+			settings.edit().putString(time + "plan", plan.getText().toString())
+					.commit();
+			// 保存当前计划到日志里面.
+			myDb.insertDiary(time, "00:00", plan.getText().toString(), "0",
+					"false", Tool.DIARY_TYPE_PLAN+"");
 			initFirstPage();
 		}
 		// 点击返回按钮，就退回原来的初始页面布局.
@@ -746,7 +814,9 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			String date = dateBtn.getText().toString();
 			String content = contentEdit.getText().toString();
 			String jiami = jiamiImg.getTag() + "";
-			myDb.insertDiary(date, time, content, "0", jiami);
+			int dt = "普通".equals(diaryType.getSelectedItem().toString()) ? Tool.DIARY_TYPE_COMMON
+					: Tool.DIARY_TYPE_LICAI;
+			myDb.insertDiary(date, time, content, "0", jiami, dt+"");
 			showMess(R.string.save_success);
 
 			initFirstPage();

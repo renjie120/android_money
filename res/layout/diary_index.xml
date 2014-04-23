@@ -71,6 +71,27 @@
                 style="@style/textstyle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/diary_type"
+                android:textSize="@dimen/editTextSize" >
+            </TextView>
+
+            <Spinner
+                android:id="@+id/diary_tp"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_width"
+                android:layout_weight="1"
+                android:drawSelectorOnTop="true"
+                android:prompt="@string/con_diarysort_prompt"
+                android:textSize="@dimen/editTextSize" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                style="@style/textstyle1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/diary_content"
                 android:textSize="@dimen/editTextSize" >
             </TextView>
@@ -101,9 +122,9 @@
             <ImageView
                 android:id="@+id/jiami"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp" 
-                android:src="@drawable/toggle"
-                android:layout_marginLeft="5dp" />
+                android:layout_height="20dp"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/toggle" />
         </TableRow>
     </TableLayout>
 

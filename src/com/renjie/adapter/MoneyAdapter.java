@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.renjie.R;
+import com.renjie.tool.Tool;
 
 public class MoneyAdapter extends BaseAdapter {
 	private ArrayList<HashMap<String, Object>> data;// 用于接收传递过来的Context对象
@@ -63,8 +64,13 @@ public class MoneyAdapter extends BaseAdapter {
 		if (null != markerItem) {
 			viewHolder.time.setTag(markerItem.get("sno"));
 			viewHolder.time.setText("" + markerItem.get("time"));
-			viewHolder.moneytype.setText("" + markerItem.get("moneytype"));
-			viewHolder.money.setText("" + markerItem.get("money"));
+			String tpNm = "" + markerItem.get("moneytype");
+			viewHolder.moneytype.setText(tpNm);
+			//如果是收入类型就进行隐藏.
+			if(Tool.isInType(tpNm))
+				viewHolder.money.setText("*");
+			else
+				viewHolder.money.setText("" + markerItem.get("money"));
 		}
 		return convertView;
 	}

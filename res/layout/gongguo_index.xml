@@ -25,7 +25,7 @@
         <TextView
             android:id="@+id/time"
             style="@style/textstyle1"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/text_width"
             android:layout_height="wrap_content"
             android:text="@string/timestr2"
             android:textSize="@dimen/editTextSize" >
@@ -40,6 +40,57 @@
             android:text="@string/con_chooseDate"
             android:textSize="@dimen/editTextSize" >
         </Button>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            style="@style/textstyle1"
+            android:layout_width="@dimen/text_width"
+            android:layout_height="wrap_content"
+            android:text="@string/gongguo_plan"
+            android:textSize="@dimen/editTextSize" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/plan_show"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_width"
+            android:layout_weight="1" 
+            android:textColor="#000000"
+            android:textSize="@dimen/editTextSize" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            style="@style/textstyle1"
+            android:layout_width="@dimen/text_width"
+            android:layout_height="wrap_content"
+            android:text="@string/gongguo_planmake"
+            android:textSize="@dimen/editTextSize" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/plan"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_width"
+            android:layout_weight="1"
+            android:hint="@string/gongguo_toPlan"
+            android:lines="4"
+            android:textSize="@dimen/editTextSize" >
+        </EditText>
     </LinearLayout>
 
     <ScrollView

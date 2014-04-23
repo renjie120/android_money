@@ -11,10 +11,12 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.renjie.R;
+import com.renjie.tool.Tool;
 
 public class DiaryAdapter extends BaseAdapter {
 	private ArrayList<HashMap<String, Object>> data;// 用于接收传递过来的Context对象
 	private Context context;
+	
 
 	public DiaryAdapter(ArrayList<HashMap<String, Object>> data, Context context) {
 		super();
@@ -52,6 +54,7 @@ public class DiaryAdapter extends BaseAdapter {
 			viewHolder.time = (TextView) convertView.findViewById(R.id.time);
 			viewHolder.content = (TextView) convertView
 					.findViewById(R.id.content);
+			viewHolder.type = (TextView) convertView.findViewById(R.id.tp);
 
 			convertView.setTag(viewHolder);
 		} else {
@@ -69,6 +72,11 @@ public class DiaryAdapter extends BaseAdapter {
 				viewHolder.content.setText("已经加密.");
 			} else
 				viewHolder.content.setText(content);
+			String tp = ""+markerItem.get("type");
+			if("".equals(tp.trim())||"null".equals(tp)){
+				tp = Tool.DIARY_TYPE_COMMON+"";
+			}
+			viewHolder.type.setText(Tool.DIARY_TYPES[Integer.parseInt(tp)]); 
 		}
 		return convertView;
 	}
@@ -77,6 +85,7 @@ public class DiaryAdapter extends BaseAdapter {
 		public TextView time;
 		public TextView date;
 		public TextView content;
+		public TextView type;
 	}
 
 }

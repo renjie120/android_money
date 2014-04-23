@@ -8,6 +8,7 @@
     <dimen name="money_list_height">30dp</dimen>
     <dimen name="input_width">80px</dimen>
     <dimen name="margin_width">10px</dimen>
+    <dimen name="text_width">70dp</dimen>
     <dimen name="menu_height">45px</dimen>
     <dimen name="title_btn_height">38px</dimen>
     <dimen name="editTextSize">20sp</dimen>

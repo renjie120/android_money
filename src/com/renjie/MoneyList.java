@@ -171,8 +171,7 @@ public class MoneyList extends BaseActivity {
 			holder.tv1 = (TextView) view.findViewById(R.id.tv1);
 			holder.tv2 = (TextView) view.findViewById(R.id.tv2);
 			view.setTag(holder);
-			Node nd = treeNodeInfo.getId();
-			System.out.println("nd---"+nd);
+			Node nd = treeNodeInfo.getId(); 
 			return updateView(view, treeNodeInfo);
 		}
 
