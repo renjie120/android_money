@@ -795,13 +795,15 @@ public class MorePage extends BaseActivity implements OnClickListener {
 						.getText().toString(), "0", img.getTag() + "");
 			}
 			showMess(R.string.save_success);
+			String _p = plan.getText().toString();
 			// String lastPlan = settings.getString(time+"plan", "无");
 			// 保存当前的计划.
-			settings.edit().putString(time + "plan", plan.getText().toString())
-					.commit();
-			// 保存当前计划到日志里面.
-			myDb.insertDiary(time, "00:00", plan.getText().toString(), "0",
-					"false", Tool.DIARY_TYPE_PLAN+"");
+			if(!"".equals(_p)){
+				settings.edit().putString(time + "plan", _p).commit();
+				// 保存当前计划到日志里面.
+				myDb.insertDiary(time, "0:0", plan.getText().toString(), "0",
+						"false", Tool.DIARY_TYPE_PLAN+"");
+			}
 			initFirstPage();
 		}
 		// 点击返回按钮，就退回原来的初始页面布局.

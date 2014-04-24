@@ -21,110 +21,128 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="@drawable/shape_corner_gridview"
-        android:padding="10dp" >
+        android:padding="5dp" >
 
         <TableRow>
 
-            <TextView
-                style="@style/textstyle1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/diary_date"
-                android:textSize="@dimen/editTextSize" >
-            </TextView>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal" >
 
-            <Button
-                android:id="@+id/diaryDate"
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_width"
-                android:layout_weight="1"
-                android:text="@string/con_chooseDate"
-                android:textSize="@dimen/editTextSize" >
-            </Button>
+                <TextView
+                    style="@style/textstyle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/diary_date"
+                    android:textSize="@dimen/editTextSize" >
+                </TextView>
+
+                <Button
+                    android:id="@+id/diaryDate"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_width"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/editTextSize" >
+                </Button>
+
+                <TextView
+                    style="@style/textstyle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/diary_time"
+                    android:textSize="@dimen/editTextSize" >
+                </TextView>
+
+                <Button
+                    android:id="@+id/diaryTime"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_width"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/editTextSize" >
+                </Button>
+            </LinearLayout>
         </TableRow>
 
         <TableRow>
 
-            <TextView
-                style="@style/textstyle1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/diary_time"
-                android:textSize="@dimen/editTextSize" >
-            </TextView>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal" >
 
-            <Button
-                android:id="@+id/diaryTime"
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_width"
-                android:layout_weight="1"
-                android:text="@string/con_chooseDate"
-                android:textSize="@dimen/editTextSize" >
-            </Button>
+                <TextView
+                    style="@style/textstyle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/diary_type"
+                    android:textSize="@dimen/editTextSize" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/diary_tp"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_width"
+                    android:layout_weight="1"
+                    android:drawSelectorOnTop="true"
+                    android:prompt="@string/con_diarysort_prompt"
+                    android:textSize="@dimen/editTextSize" />
+            </LinearLayout>
         </TableRow>
 
         <TableRow>
 
-            <TextView
-                style="@style/textstyle1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/diary_type"
-                android:textSize="@dimen/editTextSize" >
-            </TextView>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal" >
 
-            <Spinner
-                android:id="@+id/diary_tp"
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_width"
-                android:layout_weight="1"
-                android:drawSelectorOnTop="true"
-                android:prompt="@string/con_diarysort_prompt"
-                android:textSize="@dimen/editTextSize" />
+                <TextView
+                    style="@style/textstyle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/diary_content"
+                    android:textSize="@dimen/editTextSize" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/diaryContent"
+                    android:layout_width="260dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_width" 
+                    android:gravity="left|top"
+                    android:inputType="textMultiLine"
+                    android:lines="5"
+                    android:textSize="@dimen/editTextSize" >
+                </EditText>
+            </LinearLayout>
         </TableRow>
 
         <TableRow>
 
-            <TextView
-                style="@style/textstyle1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/diary_content"
-                android:textSize="@dimen/editTextSize" >
-            </TextView>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal" >
 
-            <EditText
-                android:id="@+id/diaryContent"
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_width"
-                android:layout_weight="1"
-                android:gravity="left|top"
-                android:inputType="textMultiLine"
-                android:lines="5"
-                android:textSize="@dimen/editTextSize" >
-            </EditText>
-        </TableRow>
+                <TextView
+                    style="@style/textstyle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/diary_jiami"
+                    android:textSize="@dimen/editTextSize" >
+                </TextView>
 
-        <TableRow>
-
-            <TextView
-                style="@style/textstyle1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/diary_jiami"
-                android:textSize="@dimen/editTextSize" >
-            </TextView>
-
-            <ImageView
-                android:id="@+id/jiami"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:layout_marginLeft="5dp"
-                android:src="@drawable/toggle" />
+                <ImageView
+                    android:id="@+id/jiami"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/toggle" />
+            </LinearLayout>
         </TableRow>
     </TableLayout>
 
