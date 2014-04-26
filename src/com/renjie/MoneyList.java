@@ -316,36 +316,7 @@ public class MoneyList extends BaseActivity {
 		prepareListener();
 	}
 
-	protected void prepareListener() {
-		// list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-		// public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-		// long arg3) {
-		// TextView tv = (TextView) arg1.findViewById(R.id.arrow);
-		// String isClosed = "" + tv.getTag();
-		// String level = "" + arg1.findViewById(R.id.money).getTag();
-		// if ("closed".equals(isClosed)) {
-		// if ("year".equals(level)) {
-		// String year = arg1.findViewById(R.id.year).getTag()
-		// + "";
-		// ArrayList<MonthMoney> thisYearMonthData = queryListByYear(year);
-		// listItem.addAll(thisYearMonthData);
-		//
-		// adapter.notifyDataSetChanged();
-		// } else if ("month".equals(level)) {
-		// String year = arg1.findViewById(R.id.year).getTag()
-		// + "";
-		// String month = arg1.findViewById(R.id.month).getTag()
-		// + "";
-		// ArrayList<DayMoney> thisYearMonthData = queryListByYearAndMonth(
-		// year, month);
-		// System.out.println(year + "," + month + "-----查询月份");
-		// listItem.addAll(thisYearMonthData);
-		//
-		// adapter.notifyDataSetChanged();
-		// }
-		// }
-		// }
-		// });
+	protected void prepareListener() { 
 		// 设计返回按钮
 		returnBtn.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {

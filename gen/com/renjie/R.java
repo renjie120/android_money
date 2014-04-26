@@ -9,10 +9,12 @@ package com.renjie;
 
 public final class R {
     public static final class anim {
-        public static final int push_left_out_slide=0x7f040000;
-        public static final int push_right_out_slide=0x7f040001;
-        public static final int push_top_out=0x7f040002;
-        public static final int scale_show=0x7f040003;
+        public static final int item_ani=0x7f040000;
+        public static final int list_ani=0x7f040001;
+        public static final int push_left_out_slide=0x7f040002;
+        public static final int push_right_out_slide=0x7f040003;
+        public static final int push_top_out=0x7f040004;
+        public static final int scale_show=0x7f040005;
     }
     public static final class array {
         public static final int diaryType=0x7f050004;

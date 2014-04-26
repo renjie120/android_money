@@ -46,7 +46,8 @@
         android:id="@+id/ListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:cacheColorHint="#00000000" >
+        android:cacheColorHint="#00000000"
+        android:layoutAnimation="@anim/list_ani" >
     </ListView>
 
 </LinearLayout>

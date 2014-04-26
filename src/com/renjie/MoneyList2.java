@@ -14,6 +14,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -97,7 +100,7 @@ public class MoneyList2 extends BaseActivity {
 		myDb.close();
 		backBtn.setVisibility(View.VISIBLE);
 		mAdatper = new MoneyList2Adatper(manager, this, true, false);
-		list.setAdapter(mAdatper);
+		list.setAdapter(mAdatper);  
 	}
 
 	private void queryListByYearAndMonth(String year, String month) {
