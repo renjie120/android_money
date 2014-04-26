@@ -2,7 +2,7 @@
 <resources>
 
     <string name="menu_settings">配置</string>
-    <string name="app_name">记账V</string>
+    <string name="app_name">记账</string>
     <string name="main_shouye">首页</string>
     <string name="main_diary">发送</string>
     <string name="main_config">配置</string>

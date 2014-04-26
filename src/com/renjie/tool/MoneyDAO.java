@@ -159,15 +159,19 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * 返回全部的金额组成的字符串.
+	 * 返回全部的金额组成的字符串. 只返回没有同步的数据.
 	 * 
 	 * @return
 	 */
 	public String allMoney() {
+		return allMoney(false);
+	}
+
+	public String allMoney(boolean isAll) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		String col[] = { MONEYTIME, MONEY, MONEYTYPE, MONEYDESC, MONEYSTATUS };
-		Cursor cur = db.query(MONEY_TABLENAME, col, MONEYSTATUS + "='0'", null,
-				null, null, null);
+		Cursor cur = db.query(MONEY_TABLENAME, col, isAll ? null : MONEYSTATUS
+				+ "='0'", null, null, null, MONEYTIME);
 		StringBuilder sb = new StringBuilder();
 		if (cur.getCount() < 1) {
 			return "";
@@ -327,11 +331,15 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	 * @return
 	 */
 	public String allGongguo() {
+		return allGongguo(false);
+	}
+
+	public String allGongguo(boolean isAll) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		String col[] = { GONGGUO_TIME, GONGGUO_DESC, GONGGUO_ID, GONGGUO_VALUE,
 				GONGGUO_STATUS };
-		Cursor cur = db.query(GONGGUO_TABLENAME, col, GONGGUO_STATUS + "='0'",
-				null, null, null, null);
+		Cursor cur = db.query(GONGGUO_TABLENAME, col, isAll ? null
+				: GONGGUO_STATUS + "='0'", null, null, null, GONGGUO_TIME);
 		StringBuilder sb = new StringBuilder();
 		if (cur.getCount() < 1) {
 			return "";
@@ -437,11 +445,15 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	 * @return
 	 */
 	public String allDiary() {
+		return allDiary();
+	}
+
+	public String allDiary(boolean isAll) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		String col[] = { DIARY_SNO, DIARY_DATE, DIARY_TIME, DIARY_JIAMI,
 				DIARY_CONTENT, DIARY_TYPE };
-		Cursor cur = db.query(DIARY_TABLENAME, col, GONGGUO_STATUS + "='0'",
-				null, null, null, null);
+		Cursor cur = db.query(DIARY_TABLENAME, col, isAll ? null
+				: GONGGUO_STATUS + "='0'", null, null, null, DIARY_TIME);
 		StringBuilder sb = new StringBuilder();
 		if (cur.getCount() < 1) {
 			cur.close();
