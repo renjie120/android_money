@@ -239,8 +239,8 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	 */
 	private void backup() {
 		Intent mailIntent = new Intent(android.content.Intent.ACTION_SEND);
-		String money = myDb.allMoney() + "\n\n\n" + myDb.allDiary() + "\n\n\n"
-				+ myDb.allGongguo();
+		String money = myDb.allMoney(true) + "\n\n\n" + myDb.allDiary(true) + "\n\n\n"
+				+ myDb.allGongguo(true);
 
 		mailIntent.setType("plain/text");
 		mailIntent.putExtra(android.content.Intent.EXTRA_TEXT, money);
