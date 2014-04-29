@@ -30,6 +30,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -239,8 +241,8 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	 */
 	private void backup() {
 		Intent mailIntent = new Intent(android.content.Intent.ACTION_SEND);
-		String money = myDb.allMoney(true) + "\n\n\n" + myDb.allDiary(true) + "\n\n\n"
-				+ myDb.allGongguo(true);
+		String money = myDb.allMoney(true) + "\n\n\n" + myDb.allDiary(true)
+				+ "\n\n\n" + myDb.allGongguo(true);
 
 		mailIntent.setType("plain/text");
 		mailIntent.putExtra(android.content.Intent.EXTRA_TEXT, money);
@@ -353,6 +355,26 @@ public class MorePage extends BaseActivity implements OnClickListener {
 				+ "plan", "无");
 		planShow.setText(lastPlan);
 		addRow();
+		plan.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				planShow.setText("制定计划\n(" + s.length() + ")");
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+
+			}
+
+		});
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
@@ -783,6 +805,11 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		}
 		// 保存功过信息.
 		else if (v.getId() == R.id.saveGonguo_btn) {
+			String _p = plan.getText().toString();
+			if(_p.length()>65){
+				alert("计划不可以超出65个字.");
+				return ;
+			}
 			String time = dateBtn.getText().toString();
 			int ct = table.getChildCount();
 			// 先删除已经存在的记录.
@@ -795,14 +822,13 @@ public class MorePage extends BaseActivity implements OnClickListener {
 						.getText().toString(), "0", img.getTag() + "");
 			}
 			showMess(R.string.save_success);
-			String _p = plan.getText().toString();
-			// String lastPlan = settings.getString(time+"plan", "无");
+		// String lastPlan = settings.getString(time+"plan", "无");
 			// 保存当前的计划.
-			if(!"".equals(_p)){
+			if (!"".equals(_p)) {
 				settings.edit().putString(time + "plan", _p).commit();
 				// 保存当前计划到日志里面.
 				myDb.insertDiary(time, "0:0", plan.getText().toString(), "0",
-						"false", Tool.DIARY_TYPE_PLAN+"");
+						"false", Tool.DIARY_TYPE_PLAN + "");
 			}
 			initFirstPage();
 		}
@@ -818,7 +844,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			String jiami = jiamiImg.getTag() + "";
 			int dt = "普通".equals(diaryType.getSelectedItem().toString()) ? Tool.DIARY_TYPE_COMMON
 					: Tool.DIARY_TYPE_LICAI;
-			myDb.insertDiary(date, time, content, "0", jiami, dt+"");
+			myDb.insertDiary(date, time, content, "0", jiami, dt + "");
 			showMess(R.string.save_success);
 
 			initFirstPage();
