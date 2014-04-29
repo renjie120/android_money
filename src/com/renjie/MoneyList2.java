@@ -7,6 +7,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,9 +15,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -24,8 +22,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
 import com.renjie.adapter.IMoneyData;
 import com.renjie.adapter.MoneyNewAdapter;
+import com.renjie.tool.HttpRequire;
 import com.renjie.tool.MoneyDAO;
 import com.renjie.tool.Tool;
 
@@ -54,26 +54,39 @@ public class MoneyList2 extends BaseActivity {
 		y = null;
 		m = null;
 		d = null;
-		// 实例化数据库
-		myDb = new MoneyDAO(this, MoneyDAO.VERSION);
 
 		listItem = new LinkedList<IMoneyData>();
-		Cursor allDatas = myDb.selectAlloutMoneyByYear();
 		manager = new ArrayList<Node>();
+		if (!isSuper) {
+			// 实例化数据库
+			myDb = new MoneyDAO(this, MoneyDAO.VERSION);
+			Cursor allDatas = myDb.selectAlloutMoneyByYear();
 
-		if (allDatas.getCount() >= 1) {
-			allDatas.moveToFirst();
-			do {
+			if (allDatas.getCount() >= 1) {
+				allDatas.moveToFirst();
+				do {
+					Node node1 = new Node();
+					node1.setName("[" + allDatas.getString(0) + "]年");
+					node1.setId(allDatas.getString(0));
+					node1.setLevel(1);
+					node1.setCode(df.format(allDatas.getDouble(1)));
+					manager.add(node1);
+				} while (allDatas.moveToNext());
+			}
+			allDatas.close();
+			myDb.close();
+		} else {
+			JSONArray arr = HttpRequire.getReport(settings);
+			for (int i = 0, j = arr.size(); i < j; i++) {
 				Node node1 = new Node();
-				node1.setName("[" + allDatas.getString(0) + "]年");
-				node1.setId(allDatas.getString(0));
+				JSONArray a = arr.getJSONArray(i);
+				node1.setName("[" + a.get(0) + "]年");
+				node1.setId("" + a.get(0));
 				node1.setLevel(1);
-				node1.setCode(df.format(allDatas.getDouble(1)));
+				node1.setCode(a.get(1) + "");
 				manager.add(node1);
-			} while (allDatas.moveToNext());
+			}
 		}
-		allDatas.close();
-		myDb.close();
 		backBtn.setVisibility(View.GONE);
 		mAdatper = new MoneyList2Adatper(manager, this, true, false);
 		list.setAdapter(mAdatper);
@@ -85,24 +98,37 @@ public class MoneyList2 extends BaseActivity {
 		d = null;
 		// 生成动态数组，加入数据
 		manager = new ArrayList<Node>();
-		Cursor allDatas = myDb.selectAlloutMoneyByMonth(year);
-		if (allDatas.getCount() >= 1) {
-			allDatas.moveToFirst();
-			do {
-				Node node1 = new Node();
-				node1.setName(year + "-" + allDatas.getString(0));
-				node1.setId(year + "," + allDatas.getString(0));
-				node1.setLevel(2);
-				node1.setCode(df.format(allDatas.getDouble(1)));
-				manager.add(node1);
-			} while (allDatas.moveToNext());
+		if (!isSuper) {
+			Cursor allDatas = myDb.selectAlloutMoneyByMonth(year);
+			if (allDatas.getCount() >= 1) {
+				allDatas.moveToFirst();
+				do {
+					Node node1 = new Node();
+					node1.setName(year + "-" + allDatas.getString(0));
+					node1.setId(year + "," + allDatas.getString(0));
+					node1.setLevel(2);
+					node1.setCode(df.format(allDatas.getDouble(1)));
+					manager.add(node1);
+				} while (allDatas.moveToNext());
 
+			}
+			allDatas.close();
+			myDb.close();
+		} else {
+			JSONArray arr = HttpRequire.getReportByYear(settings, year);
+			for (int i = 0, j = arr.size(); i < j; i++) {
+				Node node1 = new Node();
+				JSONArray a = arr.getJSONArray(i);
+				node1.setName(year + "-" + a.get(0));
+				node1.setId(year + "," + a.get(0));
+				node1.setLevel(2);
+				node1.setCode(a.get(1) + "");
+				manager.add(node1);
+			}
 		}
-		allDatas.close();
-		myDb.close();
 		backBtn.setVisibility(View.VISIBLE);
 		mAdatper = new MoneyList2Adatper(manager, this, true, false);
-		list.setAdapter(mAdatper);  
+		list.setAdapter(mAdatper);
 	}
 
 	private void queryListByYearAndMonth(String year, String month) {
@@ -111,20 +137,35 @@ public class MoneyList2 extends BaseActivity {
 		d = null;
 		// 生成动态数组，加入数据
 		manager = new ArrayList<Node>();
-		Cursor allDatas = myDb.selectAlloutMoneyByMonthAndDay(year, month);
-		if (allDatas.getCount() >= 1) {
-			allDatas.moveToFirst();
-			do {
+		if (!isSuper) {
+			Cursor allDatas = myDb.selectAlloutMoneyByMonthAndDay(year, month);
+			if (allDatas.getCount() >= 1) {
+				allDatas.moveToFirst();
+				do {
+					Node node1 = new Node();
+					node1.setName(year + "-" + month + "-"
+							+ allDatas.getString(0));
+					node1.setId(year + "," + month + ","
+							+ allDatas.getString(0));
+					node1.setLevel(3);
+					node1.setCode(df.format(allDatas.getDouble(1)));
+					manager.add(node1);
+				} while (allDatas.moveToNext());
+			}
+			allDatas.close();
+			myDb.close();
+		} else {
+			JSONArray arr = HttpRequire.getReportByMonth(settings, year, month);
+			for (int i = 0, j = arr.size(); i < j; i++) {
 				Node node1 = new Node();
-				node1.setName(year + "-" + month + "-" + allDatas.getString(0));
-				node1.setId(year + "," + month + "," + allDatas.getString(0));
+				JSONArray a = arr.getJSONArray(i);
+				node1.setName("" + a.get(0));
+				node1.setId(("" + a.get(0)).replace("-", ","));
 				node1.setLevel(3);
-				node1.setCode(df.format(allDatas.getDouble(1)));
+				node1.setCode(a.get(1) + "");
 				manager.add(node1);
-			} while (allDatas.moveToNext());
+			}
 		}
-		allDatas.close();
-		myDb.close();
 		backBtn.setVisibility(View.VISIBLE);
 		mAdatper = new MoneyList2Adatper(manager, this, true, false);
 		list.setAdapter(mAdatper);
@@ -144,22 +185,36 @@ public class MoneyList2 extends BaseActivity {
 		d = day;
 		// 生成动态数组，加入数据
 		manager = new ArrayList<Node>();
-		Cursor allDatas = myDb.selectAlloutMoneyByMonthAndDayDetail(year,
-				month, day);
-		if (allDatas.getCount() >= 1) {
-			allDatas.moveToFirst();
-			do {
+		if (!isSuper) {
+			Cursor allDatas = myDb.selectAlloutMoneyByMonthAndDayDetail(year,
+					month, day);
+			if (allDatas.getCount() >= 1) {
+				allDatas.moveToFirst();
+				do {
+					Node node1 = new Node();
+					node1.setName(allDatas.getString(2) + ","
+							+ allDatas.getString(3));
+					node1.setId(allDatas.getString(0));
+					node1.setLevel(4);
+					node1.setCode(df.format(allDatas.getDouble(1)));
+					manager.add(node1);
+				} while (allDatas.moveToNext());
+			}
+			allDatas.close();
+			myDb.close();
+		} else {
+			JSONArray arr = HttpRequire.getReportByDay(settings, year + "-"
+					+ month + "-" + day);
+			for (int i = 0, j = arr.size(); i < j; i++) {
 				Node node1 = new Node();
-				node1.setName(allDatas.getString(2) + ","
-						+ allDatas.getString(3));
-				node1.setId(allDatas.getString(0));
+				JSONArray a = arr.getJSONArray(i);
+				node1.setName(a.get(0) + "," + a.get(1));
+				node1.setId(a.get(0) + "," + a.get(1));
 				node1.setLevel(4);
-				node1.setCode(df.format(allDatas.getDouble(1)));
+				node1.setCode(a.get(2) + "");
 				manager.add(node1);
-			} while (allDatas.moveToNext());
+			}
 		}
-		allDatas.close();
-		myDb.close();
 		backBtn.setVisibility(View.VISIBLE);
 		mAdatper = new MoneyList2Adatper(manager, this, false, true);
 		list.setAdapter(mAdatper);
@@ -260,6 +315,8 @@ public class MoneyList2 extends BaseActivity {
 
 	}
 
+	private SharedPreferences settings;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -271,9 +328,9 @@ public class MoneyList2 extends BaseActivity {
 		backBtn = (Button) findViewById(R.id.backbtn);
 		// 初始化的时候不显示上级按钮.
 		backBtn.setVisibility(View.GONE);
+		settings = getSharedPreferences(Tool.CONFIG, 0);
 		queryYear();
-		isSuper = getIntent().getBooleanExtra(Tool.SUPERPASS, false);
-		System.out.println("是否超级"+isSuper);
+		isSuper = getIntent().getBooleanExtra(Tool.SUPERPASS, false); 
 		registerForContextMenu(list);
 		prepareListener();
 	}

@@ -74,6 +74,10 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	String remoteMoneyUrl = "http://REMOTEIP:PORT/money/superconsole!importPhoneMoney.do";
 	String remoteDiaryUrl = "http://REMOTEIP:PORT/money/superconsole!importPhoneDiary.do";
 	String remoteGongguoUrl = "http://REMOTEIP:PORT/money/superconsole!importPhoneGongguo.do";
+	public static final String REMOTEREPORT_OUT = "http://REMOTEIP:PORT/money/superconsole!getReportOut.do";
+	public static final String REMOTEREPORT_BY_YEAR = "http://REMOTEIP:PORT/money/superconsole!getReportOutByYear.do?year=YEAR";
+	public static final String REMOTEREPORT_BY_MONTH = "http://REMOTEIP:PORT/money/superconsole!getReportOutByMonth.do?year=YEAR&month=MONTH";
+	public static final String REMOTEREPORT_BY_DAY = "http://REMOTEIP:PORT/money/superconsole!getReportOutInDay.do?day=DAY";
 	private final static int SUCCESS = 1;
 	private int myyear;
 	private int mymonth;
@@ -338,7 +342,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	}
 
 	private EditText plan;
-	private TextView planShow,mk_plan;
+	private TextView planShow, mk_plan;
 
 	/**
 	 * 显示功过录的界面.
@@ -550,7 +554,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			} while (allDatas.moveToNext());
 		}
 		myDb.close();
-		MoneyAdapter adapter = new MoneyAdapter(listItem,isSuper, this);
+		MoneyAdapter adapter = new MoneyAdapter(listItem, isSuper, this);
 		moneylist.setAdapter(adapter);
 	}
 
@@ -675,12 +679,13 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	}
 
 	private boolean isSuper;
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		settings = getSharedPreferences(Tool.CONFIG, 0);
 		initFirstPage();
-		isSuper =  getIntent().getBooleanExtra(Tool.SUPERPASS, false);
+		isSuper = getIntent().getBooleanExtra(Tool.SUPERPASS, false);
 		// 实例化数据库
 		myDb = new MoneyDAO(this, MoneyDAO.VERSION);
 
@@ -809,9 +814,9 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		// 保存功过信息.
 		else if (v.getId() == R.id.saveGonguo_btn) {
 			String _p = plan.getText().toString();
-			if(_p.length()>65){
+			if (_p.length() > 65) {
 				alert("计划不可以超出65个字.");
-				return ;
+				return;
 			}
 			String time = dateBtn.getText().toString();
 			int ct = table.getChildCount();
@@ -825,7 +830,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 						.getText().toString(), "0", img.getTag() + "");
 			}
 			showMess(R.string.save_success);
-		// String lastPlan = settings.getString(time+"plan", "无");
+			// String lastPlan = settings.getString(time+"plan", "无");
 			// 保存当前的计划.
 			if (!"".equals(_p)) {
 				settings.edit().putString(time + "plan", _p).commit();
