@@ -338,7 +338,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	}
 
 	private EditText plan;
-	private TextView planShow;
+	private TextView planShow,mk_plan;
 
 	/**
 	 * 显示功过录的界面.
@@ -348,6 +348,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		dateBtn = (Button) findViewById(R.id.chooseTime_btn);
 		plan = (EditText) findViewById(R.id.plan);
 		planShow = (TextView) findViewById(R.id.plan_show);
+		mk_plan = (TextView) findViewById(R.id.mk_plan);
 		saveGonguo_btn = (Button) findViewById(R.id.saveGonguo_btn);
 		table = (TableLayout) findViewById(R.id.gongguo_table);
 		dateBtn.setText(getToday());
@@ -360,7 +361,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				planShow.setText("制定计划\n(" + s.length() + ")");
+				mk_plan.setText("制定计划\n(" + s.length() + ")");
 			}
 
 			@Override
@@ -549,7 +550,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			} while (allDatas.moveToNext());
 		}
 		myDb.close();
-		MoneyAdapter adapter = new MoneyAdapter(listItem, this);
+		MoneyAdapter adapter = new MoneyAdapter(listItem,isSuper, this);
 		moneylist.setAdapter(adapter);
 	}
 
@@ -673,11 +674,13 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		});
 	}
 
+	private boolean isSuper;
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		settings = getSharedPreferences(Tool.CONFIG, 0);
 		initFirstPage();
+		isSuper =  getIntent().getBooleanExtra(Tool.SUPERPASS, false);
 		// 实例化数据库
 		myDb = new MoneyDAO(this, MoneyDAO.VERSION);
 

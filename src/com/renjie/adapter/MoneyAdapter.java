@@ -16,10 +16,12 @@ import com.renjie.tool.Tool;
 public class MoneyAdapter extends BaseAdapter {
 	private ArrayList<HashMap<String, Object>> data;// 用于接收传递过来的Context对象
 	private Context context;
+	private boolean isSuper;
 
-	public MoneyAdapter(ArrayList<HashMap<String, Object>> data, Context context) {
+	public MoneyAdapter(ArrayList<HashMap<String, Object>> data,boolean isSuper, Context context) {
 		super();
 		this.data = data;
+		this.isSuper = isSuper;
 		this.context = context;
 	}
 
@@ -67,7 +69,7 @@ public class MoneyAdapter extends BaseAdapter {
 			String tpNm = "" + markerItem.get("moneytype");
 			viewHolder.moneytype.setText(tpNm);
 			//如果是收入类型就进行隐藏.
-			if(Tool.isInType(tpNm))
+			if(Tool.isInType(tpNm)&&!isSuper)
 				viewHolder.money.setText("*");
 			else
 				viewHolder.money.setText("" + markerItem.get("money"));

@@ -61,7 +61,7 @@
             android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_width"
-            android:layout_weight="1" 
+            android:layout_weight="1"
             android:textColor="#000000"
             android:textSize="@dimen/editTextSize" >
         </TextView>
@@ -74,6 +74,7 @@
         android:orientation="horizontal" >
 
         <TextView
+            android:id="@+id/mk_plan"
             style="@style/textstyle1"
             android:layout_width="@dimen/text_width"
             android:layout_height="wrap_content"

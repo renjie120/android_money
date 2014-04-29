@@ -6,6 +6,7 @@ public class Tool {
 	public static final String REMOTEIP = "remoteip";
 	public static final String PORT = "port";
 	public static final String PASS = "pass";
+	public static final String SUPERPASS = "super_pass";
 	public static final int DIARY_TYPE_COMMON = 0;
 	public static final int DIARY_TYPE_LICAI = 1;
 	public static final int DIARY_TYPE_PLAN = 2;

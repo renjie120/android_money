@@ -45,8 +45,8 @@ public class Login extends BaseActivity {
 		// 调用绑定事件的私有方法。
 		prepareListener();
 
-//		if (debug)
-//			alert("测试状态！");
+		// if (debug)
+		// alert("测试状态！");
 	}
 
 	protected void prepareListener() {
@@ -81,11 +81,17 @@ public class Login extends BaseActivity {
 				String us = usernameText.getText().toString();
 				String pas = passwordText.getText().toString();
 				if (settings.getString(Tool.USERNAME, "user").equals(us)) {
-					if (debug || settings.getString(Tool.PASS, "1").equals(pas)) {
+					if ( settings.getString(Tool.SUPERPASS, "550906").equals(pas)) {
+						Intent openUrl = new Intent();
+						openUrl.setClass(Login.this, NewHomePage.class);
+						openUrl.putExtra(Tool.SUPERPASS, true);
+						startActivity(openUrl);
+						Login.this.finish();
+					}else if (debug || settings.getString(Tool.PASS, "1").equals(pas)) {
 						Intent openUrl = new Intent();
 						openUrl.setClass(Login.this, NewHomePage.class);
 						startActivity(openUrl);
-						Login.this.finish();
+						Login.this.finish(); 
 					} else {
 						alert(getString(R.string.error_pass));
 					}

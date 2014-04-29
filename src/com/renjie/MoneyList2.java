@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.renjie.adapter.IMoneyData;
 import com.renjie.adapter.MoneyNewAdapter;
 import com.renjie.tool.MoneyDAO;
+import com.renjie.tool.Tool;
 
 /**
  * 显示理财信息的多层次列表界面.
@@ -44,6 +45,7 @@ public class MoneyList2 extends BaseActivity {
 	private List<Node> manager;
 	private MoneyList2Adatper mAdatper;
 	private Node currentNode;
+	private boolean isSuper;
 	private static int maxLevel = 3;
 	private DecimalFormat df = new DecimalFormat("#.00");
 	private String y = null, m = null, d = null;
@@ -270,6 +272,8 @@ public class MoneyList2 extends BaseActivity {
 		// 初始化的时候不显示上级按钮.
 		backBtn.setVisibility(View.GONE);
 		queryYear();
+		isSuper = getIntent().getBooleanExtra(Tool.SUPERPASS, false);
+		System.out.println("是否超级"+isSuper);
 		registerForContextMenu(list);
 		prepareListener();
 	}
