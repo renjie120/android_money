@@ -130,10 +130,10 @@ public abstract class BaseActivity extends Activity {
 	 * 弹出确定提示框. 
 	 * @param listener
 	 */
-	public void confirm(DialogInterface.OnClickListener listener) {
+	public void confirm(DialogInterface.OnClickListener listener,int msg) {
 		new AlertDialog.Builder(this)
 				.setTitle(R.string.app_name)
-				.setMessage(R.string.delete_confirm)
+				.setMessage(msg)
 				.setNegativeButton(R.string.con_cancel,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,

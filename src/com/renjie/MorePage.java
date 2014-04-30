@@ -190,7 +190,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			public void onClick(DialogInterface dialog, int which) {
 				myDb.deleteAllMoney();
 			}
-		});
+		},R.string.delete_confirm);
 	}
 
 	ProgressDialog myDialog = null;
@@ -454,7 +454,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 				showMess(R.string.delete_success);
 				initDiaryList();
 			}
-		});
+		},R.string.delete_confirm);
 	}
 
 	private void deleteMoney(final long sno) {
@@ -467,7 +467,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 						Toast.LENGTH_SHORT).show();
 				initMoneyList();
 			}
-		});
+		},R.string.delete_confirm);
 	}
 
 	/**
@@ -483,7 +483,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 				showMess(R.string.delete_success);
 				initGongguoList();
 			}
-		});
+		},R.string.delete_confirm);
 	}
 
 	/**

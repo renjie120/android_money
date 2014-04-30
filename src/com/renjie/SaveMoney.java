@@ -16,6 +16,7 @@ import org.apache.http.util.EntityUtils;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -46,7 +47,7 @@ public class SaveMoney extends BaseActivity {
 	private EditText getMoneyDescText;
 	private Spinner sortSpinner;
 	private Button dateBtn;
-	private Button saveBtn;
+	private Button saveBtn,leave_btn;
 	private int myyear;
 	private int mymonth;
 	private int myday;
@@ -67,6 +68,7 @@ public class SaveMoney extends BaseActivity {
 		dateBtn = (Button) findViewById(R.id.chooseTime_btn2);
 		sortSpinner = (Spinner) findViewById(R.id.spinner_sort);
 		saveBtn = (Button) findViewById(R.id.savebtn);
+		leave_btn = (Button) findViewById(R.id.leave_btn);
 		// backBtn = (Button) findViewById(R.id.back);
 		// 调用绑定事件的私有方法。
 		prepareListener();
@@ -114,6 +116,22 @@ public class SaveMoney extends BaseActivity {
 	 * 设置按钮的单击事件
 	 */
 	protected void prepareListener() {
+		leave_btn.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				confirm(new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {  
+						Intent openUrl = new Intent();
+						openUrl.setClass(SaveMoney.this, Login.class);
+						startActivity(openUrl);
+						SaveMoney.this.finish();
+					}
+				},R.string.con_quitStr);
+			}
+			
+		});
 		/**
 		 * 保存到本地sqlite数据库
 		 */

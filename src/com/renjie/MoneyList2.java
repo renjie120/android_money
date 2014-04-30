@@ -583,7 +583,7 @@ public class MoneyList2 extends BaseActivity {
 							showMess(R.string.delete_success);
 							queryListByYearAndMonthAndDayNew(y, m, d);
 						}
-					});
+					},R.string.delete_confirm);
 				}
 			}
 		});
