@@ -141,7 +141,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	public Cursor selectAlloutMoneyByMonthAndDayDetail(String year,
 			String month, String day) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		String[] cols = { MONEYID, MONEY, MONEYTIME, MONEYTYPE };
+		String[] cols = { MONEYID, MONEY, MONEYTIME, MONEYTYPE ,MONEYDESC};
 		String where = " tp=? and year=? and month=?  and day=?";
 		// tablename columns, selection, selectionArgs, groupBy, having, orderBy
 		Cursor cursor = db.query(MONEY_TABLENAME, cols, where, new String[] {
@@ -445,7 +445,7 @@ public class MoneyDAO extends SQLiteOpenHelper {
 	 * @return
 	 */
 	public String allDiary() {
-		return allDiary();
+		return allDiary(false);
 	}
 
 	public String allDiary(boolean isAll) {

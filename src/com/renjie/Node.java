@@ -7,6 +7,15 @@ public class Node {
 	private String code;
 	private String id;
 	private int level;
+	private String param1;
+	public String getParam1() {
+		return param1;
+	}
+
+	public void setParam1(String param1) {
+		this.param1 = param1;
+	}
+
 	private boolean isParent;
 	private boolean opened;
 	private boolean loadChildren;

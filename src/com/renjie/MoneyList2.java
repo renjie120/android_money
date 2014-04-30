@@ -5,11 +5,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -49,15 +54,43 @@ public class MoneyList2 extends BaseActivity {
 	private static int maxLevel = 3;
 	private DecimalFormat df = new DecimalFormat("#.00");
 	private String y = null, m = null, d = null;
+	public Handler myHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case 1:
+				mAdatper = new MoneyList2Adatper(manager, MoneyList2.this,
+						true, false, false);
+				list.setAdapter(mAdatper);
+				break;
+			case 2:
+				mAdatper = new MoneyList2Adatper(manager, MoneyList2.this,
+						false, true, true);
+				list.setAdapter(mAdatper);
+				break;
+			case 3:
+				backBtn.setVisibility(View.VISIBLE);
+				break;
+			case 4:
+				backBtn.setVisibility(View.GONE);
+				break;
+			default:
+				super.hasMessages(msg.what);
+				break;
+			}
+		}
+	};
 
-	private void queryYear() {
-		y = null;
-		m = null;
-		d = null;
-
-		listItem = new LinkedList<IMoneyData>();
-		manager = new ArrayList<Node>();
-		if (!isSuper) {
+	/**
+	 * 查询年视图，显示每年的开支
+	 */
+	private void queryYearNew() {
+		// 如果是超级用户，就查询远程数据
+		if (isSuper)
+			new MyListLoader(true, 1, null, null, null).execute("");
+		// 否则查询本地数据库
+		else {
+			listItem = new LinkedList<IMoneyData>();
+			manager = new ArrayList<Node>();
 			// 实例化数据库
 			myDb = new MoneyDAO(this, MoneyDAO.VERSION);
 			Cursor allDatas = myDb.selectAlloutMoneyByYear();
@@ -75,7 +108,21 @@ public class MoneyList2 extends BaseActivity {
 			}
 			allDatas.close();
 			myDb.close();
-		} else {
+			backBtn.setVisibility(View.GONE);
+			myHandler.sendEmptyMessage(1);
+		}
+	}
+
+	/**
+	 * 解析远程的数据
+	 */
+	private void queryYear() {
+		y = null;
+		m = null;
+		d = null;
+		try {
+			listItem = new LinkedList<IMoneyData>();
+			manager = new ArrayList<Node>();
 			JSONArray arr = HttpRequire.getReport(settings);
 			for (int i = 0, j = arr.size(); i < j; i++) {
 				Node node1 = new Node();
@@ -86,13 +133,18 @@ public class MoneyList2 extends BaseActivity {
 				node1.setCode(a.get(1) + "");
 				manager.add(node1);
 			}
+			myHandler.sendEmptyMessage(1);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		backBtn.setVisibility(View.GONE);
-		mAdatper = new MoneyList2Adatper(manager, this, true, false);
-		list.setAdapter(mAdatper);
 	}
 
-	private void queryListByYear(String year) {
+	/**
+	 * 查询某一年的月视图数据
+	 * 
+	 * @param year
+	 */
+	private void queryListByYearNew(String year) {
 		y = year;
 		m = null;
 		d = null;
@@ -114,24 +166,45 @@ public class MoneyList2 extends BaseActivity {
 			}
 			allDatas.close();
 			myDb.close();
+			myHandler.sendEmptyMessage(1);
+
+			backBtn.setVisibility(View.VISIBLE);
 		} else {
-			JSONArray arr = HttpRequire.getReportByYear(settings, year);
-			for (int i = 0, j = arr.size(); i < j; i++) {
-				Node node1 = new Node();
-				JSONArray a = arr.getJSONArray(i);
-				node1.setName(year + "-" + a.get(0));
-				node1.setId(year + "," + a.get(0));
-				node1.setLevel(2);
-				node1.setCode(a.get(1) + "");
-				manager.add(node1);
-			}
+			new MyListLoader(true, 2, year, null, null).execute("");
 		}
-		backBtn.setVisibility(View.VISIBLE);
-		mAdatper = new MoneyList2Adatper(manager, this, true, false);
-		list.setAdapter(mAdatper);
 	}
 
-	private void queryListByYearAndMonth(String year, String month) {
+	/**
+	 * 解析远程的数据.
+	 * 
+	 * @param year
+	 */
+	private void queryListByYear(String year) {
+		y = year;
+		m = null;
+		d = null;
+		// 生成动态数组，加入数据
+		manager = new ArrayList<Node>();
+		JSONArray arr = HttpRequire.getReportByYear(settings, year);
+		for (int i = 0, j = arr.size(); i < j; i++) {
+			Node node1 = new Node();
+			JSONArray a = arr.getJSONArray(i);
+			node1.setName(year + "-" + a.get(0));
+			node1.setId(year + "," + a.get(0));
+			node1.setLevel(2);
+			node1.setCode(a.get(1) + "");
+			manager.add(node1);
+		}
+		myHandler.sendEmptyMessage(1);
+	}
+
+	/**
+	 * 查询某一个月的每天的数据.
+	 * 
+	 * @param year
+	 * @param month
+	 */
+	private void queryListByYearAndMonthNew(String year, String month) {
 		y = year;
 		m = month;
 		d = null;
@@ -154,31 +227,40 @@ public class MoneyList2 extends BaseActivity {
 			}
 			allDatas.close();
 			myDb.close();
+			backBtn.setVisibility(View.VISIBLE);
+			myHandler.sendEmptyMessage(1);
 		} else {
-			JSONArray arr = HttpRequire.getReportByMonth(settings, year, month);
-			for (int i = 0, j = arr.size(); i < j; i++) {
-				Node node1 = new Node();
-				JSONArray a = arr.getJSONArray(i);
-				node1.setName("" + a.get(0));
-				node1.setId(("" + a.get(0)).replace("-", ","));
-				node1.setLevel(3);
-				node1.setCode(a.get(1) + "");
-				manager.add(node1);
-			}
+			new MyListLoader(true, 3, year, month, null).execute("");
 		}
-		backBtn.setVisibility(View.VISIBLE);
-		mAdatper = new MoneyList2Adatper(manager, this, true, false);
-		list.setAdapter(mAdatper);
+	}
+
+	private void queryListByYearAndMonth(String year, String month) {
+		y = year;
+		m = month;
+		d = null;
+		// 生成动态数组，加入数据
+		manager = new ArrayList<Node>();
+		JSONArray arr = HttpRequire.getReportByMonth(settings, year, month);
+		for (int i = 0, j = arr.size(); i < j; i++) {
+			Node node1 = new Node();
+			JSONArray a = arr.getJSONArray(i);
+			node1.setName("" + a.get(0));
+			node1.setId(("" + a.get(0)).replace("-", ","));
+			node1.setLevel(3);
+			node1.setCode(a.get(1) + "");
+			manager.add(node1);
+		}
+		myHandler.sendEmptyMessage(1);
 	}
 
 	/**
-	 * 查询某一天的具体数据.
+	 * 查询某一天的数据.
 	 * 
 	 * @param year
 	 * @param month
 	 * @param day
 	 */
-	private void queryListByYearAndMonthAndDay(String year, String month,
+	private void queryListByYearAndMonthAndDayNew(String year, String month,
 			String day) {
 		y = year;
 		m = month;
@@ -195,6 +277,7 @@ public class MoneyList2 extends BaseActivity {
 					node1.setName(allDatas.getString(2) + ","
 							+ allDatas.getString(3));
 					node1.setId(allDatas.getString(0));
+					node1.setParam1(allDatas.getString(4));
 					node1.setLevel(4);
 					node1.setCode(df.format(allDatas.getDouble(1)));
 					manager.add(node1);
@@ -202,41 +285,73 @@ public class MoneyList2 extends BaseActivity {
 			}
 			allDatas.close();
 			myDb.close();
+			backBtn.setVisibility(View.VISIBLE);
+			myHandler.sendEmptyMessage(2);
 		} else {
-			JSONArray arr = HttpRequire.getReportByDay(settings, year + "-"
-					+ month + "-" + day);
-			for (int i = 0, j = arr.size(); i < j; i++) {
-				Node node1 = new Node();
-				JSONArray a = arr.getJSONArray(i);
-				node1.setName(a.get(0) + "," + a.get(1));
-				node1.setId(a.get(0) + "," + a.get(1));
-				node1.setLevel(4);
-				node1.setCode(a.get(2) + "");
-				manager.add(node1);
-			}
+			new MyListLoader(true, 4, y, m, d).execute("");
 		}
-		backBtn.setVisibility(View.VISIBLE);
-		mAdatper = new MoneyList2Adatper(manager, this, false, true);
-		list.setAdapter(mAdatper);
+	}
+
+	/**
+	 * 查询某一天的具体数据.
+	 * 
+	 * @param year
+	 * @param month
+	 * @param day
+	 */
+	private void queryListByYearAndMonthAndDay(String year, String month,
+			String day) {
+		y = year;
+		m = month;
+		d = day;
+		// 生成动态数组，加入数据
+		manager = new ArrayList<Node>();
+
+		JSONArray arr = HttpRequire.getReportByDay(settings, year + "-" + month
+				+ "-" + day);
+		for (int i = 0, j = arr.size(); i < j; i++) {
+			Node node1 = new Node();
+			JSONArray a = arr.getJSONArray(i);
+			node1.setName(a.get(0) + "," + a.get(1));
+			node1.setId(a.get(0) + "," + a.get(1));
+			node1.setLevel(4);
+			node1.setParam1(a.get(3) + "");
+			node1.setCode(a.get(2) + "");
+			manager.add(node1);
+		}
+		myHandler.sendEmptyMessage(2);
 	}
 
 	public void onResume() {
 		super.onResume();
-		queryYear();
+		queryYearNew();
 	}
 
 	class MoneyList2Adatper extends BaseAdapter {
 		private List<Node> data;// 用于接收传递过来的Context对象
 		private Context context;
-		private boolean showNext, showSpan;
+		private boolean showNext, showSpan, showDesc;
 
+		/**
+		 * 
+		 * @param data
+		 *            数据
+		 * @param context
+		 * @param showNext
+		 *            是否显示下一级别
+		 * @param showSpan
+		 *            是否显示首页
+		 * @param showDesc
+		 *            是否显示描述信息.
+		 */
 		public MoneyList2Adatper(List<Node> data, Context context,
-				boolean showNext, boolean showSpan) {
+				boolean showNext, boolean showSpan, boolean showDesc) {
 			super();
 			this.data = data;
 			this.context = context;
 			this.showSpan = showSpan;
 			this.showNext = showNext;
+			this.showDesc = showDesc;
 		}
 
 		@Override
@@ -275,6 +390,8 @@ public class MoneyList2 extends BaseActivity {
 						.findViewById(R.id.next);
 				viewHolder.span = (TextView) convertView
 						.findViewById(R.id.span);
+				viewHolder.desc = (TextView) convertView
+						.findViewById(R.id.m_desc);
 				convertView.setTag(viewHolder);
 			} else {
 				viewHolder = (ViewHolder) convertView.getTag();
@@ -289,6 +406,8 @@ public class MoneyList2 extends BaseActivity {
 			else
 				viewHolder.span.setVisibility(View.GONE);
 
+			viewHolder.desc.setVisibility(View.GONE);
+
 			Node markerItem = getItem(position);
 			if (null != markerItem) {
 				if (showSpan) {
@@ -301,21 +420,110 @@ public class MoneyList2 extends BaseActivity {
 				viewHolder.money.setText(markerItem.getCode());
 				viewHolder.money.setTag(markerItem.getLevel());
 				viewHolder.next.setTag(markerItem.getId());
+				String str = markerItem.getParam1();
+				if (str != null && !"null".equals(str) && !"".equals(str)) {
+					viewHolder.desc.setVisibility(View.VISIBLE);
+					viewHolder.desc.setText(str);
+				} else
+					viewHolder.desc.setVisibility(View.GONE);
 			}
 
 			return convertView;
 		}
 
 		class ViewHolder {
+			// 时间
 			TextView time;
+			// 是否出现打开下一级别的图标
 			ImageView next;
+			// 金额
 			TextView money;
 			TextView span;
+			// 描述信息
+			TextView desc;
 		}
 
 	}
 
 	private SharedPreferences settings;
+	private static final int DIALOG_KEY = 0;
+	private ProgressDialog dialog;
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case DIALOG_KEY: {
+			dialog = new ProgressDialog(this);
+			dialog.setMessage("正在查询...");
+			dialog.setIndeterminate(true);
+			dialog.setCancelable(true);
+			return dialog;
+		}
+		}
+		return null;
+	}
+
+	private class MyListLoader extends AsyncTask<String, String, String> {
+
+		private boolean showDialog;
+		private int type;
+		private String y;
+		private String m;
+		private String d;
+
+		public MyListLoader(boolean showDialog, int type, String year,
+				String month, String day) {
+			this.showDialog = showDialog;
+			this.type = type;
+			this.y = year;
+			this.m = month;
+			this.d = day;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// 执行过程中显示进度栏.
+			if (showDialog) {
+				showDialog(DIALOG_KEY);
+			}
+		}
+
+		public String doInBackground(String... p) {
+			if (type == 1)
+				queryYear();
+			else if (type == 2) {
+				queryListByYear(y);
+			} else if (type == 3) {
+				queryListByYearAndMonth(y, m);
+			} else if (type == 4) {
+				queryListByYearAndMonthAndDay(y, m, d);
+			}
+			return "";
+		}
+
+		@Override
+		public void onPostExecute(String Re) {
+			/**
+			 * 完成的时候就取消进度栏.
+			 */
+			if (showDialog) {
+				removeDialog(DIALOG_KEY);
+			}
+			if (type == 4 || type == 2 || type == 3) {
+				myHandler.sendEmptyMessage(3);
+			} else {
+				myHandler.sendEmptyMessage(4);
+			}
+		}
+
+		@Override
+		protected void onCancelled() {
+			// 取消进度栏.
+			if (showDialog) {
+				removeDialog(DIALOG_KEY);
+			}
+		}
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -329,8 +537,8 @@ public class MoneyList2 extends BaseActivity {
 		// 初始化的时候不显示上级按钮.
 		backBtn.setVisibility(View.GONE);
 		settings = getSharedPreferences(Tool.CONFIG, 0);
-		queryYear();
-		isSuper = getIntent().getBooleanExtra(Tool.SUPERPASS, false); 
+		queryYearNew();
+		isSuper = getIntent().getBooleanExtra(Tool.SUPERPASS, false);
 		registerForContextMenu(list);
 		prepareListener();
 	}
@@ -339,7 +547,7 @@ public class MoneyList2 extends BaseActivity {
 		// 设计返回按钮
 		topBtn.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				queryYear();
+				queryYearNew();
 			}
 		});
 
@@ -347,9 +555,9 @@ public class MoneyList2 extends BaseActivity {
 		backBtn.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (y != null && m != null) {
-					queryListByYear(y);
+					queryListByYearNew(y);
 				} else if (y != null && m == null) {
-					queryYear();
+					queryYearNew();
 				}
 			}
 		});
@@ -359,20 +567,21 @@ public class MoneyList2 extends BaseActivity {
 				final String id = "" + arg1.findViewById(R.id.next).getTag();
 				String level = "" + arg1.findViewById(R.id.money).getTag();
 				if ("1".equals(level)) {
-					queryListByYear("" + id);
+					queryListByYearNew(id + "");
 				} else if ("2".equals(level)) {
 					String[] datas = id.split(",");
-					queryListByYearAndMonth(datas[0], datas[1]);
+					queryListByYearAndMonthNew(datas[0], datas[1]);
 				} else if ("3".equals(level)) {
 					String[] datas = id.split(",");
-					queryListByYearAndMonthAndDay(datas[0], datas[1], datas[2]);
+					queryListByYearAndMonthAndDayNew(datas[0], datas[1],
+							datas[2]);
 				} else if ("4".equals(level)) {
 					confirm(new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
 							myDb.deleteMoney(Integer.parseInt(id));
 							showMess(R.string.delete_success);
-							queryListByYearAndMonthAndDay(y, m, d);
+							queryListByYearAndMonthAndDayNew(y, m, d);
 						}
 					});
 				}

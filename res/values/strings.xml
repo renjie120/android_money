@@ -15,8 +15,7 @@
     <string name="diary_type">日记类别</string>
     <string name="moneystr">收支金额</string>
     <string name="sortstr">收支类别</string>
-    <string name="moneydesc">收支说明</string>
-    <string name="testId">421081198705132816</string>
+    <string name="moneydesc">收支说明</string> 
     <string name="urlstr">请输入网址</string>
     <string name="callstr">请输入电话</string>
     <string name="urlbtn">打开网页</string>

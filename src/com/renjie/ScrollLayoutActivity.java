@@ -2,6 +2,7 @@ package com.renjie;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -15,12 +16,15 @@ import android.widget.RelativeLayout;
 
 import com.ericssonlabs.OnViewChangeListener;
 import com.ericssonlabs.ScrollLayout;
+import com.renjie.tool.Tool;
 
-public class ScrollLayoutActivity extends Activity implements OnViewChangeListener{
-   
+public class ScrollLayoutActivity extends Activity implements
+		OnViewChangeListener {
+
 	private ScrollLayout mScrollLayout;
 	private ImageView[] imgs;
 	private int count;
+	private SharedPreferences settings;
 	private int currentItem;
 	private Button startBtn;
 	private RelativeLayout mainRLayout;
@@ -33,7 +37,17 @@ public class ScrollLayoutActivity extends Activity implements OnViewChangeListen
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.welcome);
-		initView();
+		settings = getSharedPreferences(Tool.CONFIG, 0);
+		String firstStart = settings.getString("firstStart", "false");
+		if ("true".equals(firstStart)) {
+			Intent intent = new Intent(ScrollLayoutActivity.this,
+					Login.class);
+			ScrollLayoutActivity.this.startActivity(intent);
+			ScrollLayoutActivity.this.finish();
+		} else {
+			initView();
+			settings.edit().putString("firstStart", "true").commit();
+		}
 	}
 
 	private void initView() {
@@ -86,13 +100,13 @@ public class ScrollLayoutActivity extends Activity implements OnViewChangeListen
 					public void onAnimationEnd(Animation animation) {
 						leftLayout.setVisibility(View.GONE);
 						rightLayout.setVisibility(View.GONE);
-						Intent intent = new Intent(
-								ScrollLayoutActivity.this,
+						Intent intent = new Intent(ScrollLayoutActivity.this,
 								Login.class);
 						ScrollLayoutActivity.this.startActivity(intent);
 						ScrollLayoutActivity.this.finish();
-						//结束老Activity启动新Activity之前的一个过度动画
-						overridePendingTransition(R.anim.zoom_out_enter,R.anim.zoom_out_exit);
+						// 结束老Activity启动新Activity之前的一个过度动画
+						overridePendingTransition(R.anim.zoom_out_enter,
+								R.anim.zoom_out_exit);
 					}
 				});
 				break;
