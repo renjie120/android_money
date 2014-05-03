@@ -15,7 +15,7 @@
     <string name="diary_type">日记类别</string>
     <string name="moneystr">收支金额</string>
     <string name="sortstr">收支类别</string>
-    <string name="moneydesc">收支说明</string> 
+    <string name="moneydesc">收支说明</string>
     <string name="urlstr">请输入网址</string>
     <string name="callstr">请输入电话</string>
     <string name="urlbtn">打开网页</string>
@@ -88,6 +88,7 @@
     <string name="more_backupall">备份全部数据</string>
     <string name="more_gongguo">功过记录</string>
     <string name="more_diary">私人日记</string>
+    <string name="more_moneyreport">类别报表</string>
     <string name="more_sendgongguo">同步功过数据</string>
     <string name="more_sendmoney">同步金额数据</string>
     <string name="more_senddiary">同步日记数据</string>

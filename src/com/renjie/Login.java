@@ -36,6 +36,7 @@ public class Login extends BaseActivity {
 		setContentView(R.layout.login);
 		usernameText = (EditText) findViewById(R.id.usertext);
 		passwordText = (EditText) findViewById(R.id.passtext);
+		//passwordText.setText("550906");
 		loginBtn = (Button) findViewById(R.id.loginbtn);
 		showPass = (CheckBox) findViewById(R.id.showpass);
 		quitBtn = (Button) findViewById(R.id.quitbtn);

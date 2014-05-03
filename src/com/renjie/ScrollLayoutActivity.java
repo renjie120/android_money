@@ -75,6 +75,7 @@ public class ScrollLayoutActivity extends Activity implements
 		@Override
 		public void onClick(View v) {
 			switch (v.getId()) {
+			//点击进入开始界面之后的登录界面的按钮事件.
 			case R.id.startBtn:
 				mScrollLayout.setVisibility(View.GONE);
 				pointLLayout.setVisibility(View.GONE);

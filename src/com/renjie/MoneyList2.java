@@ -2,12 +2,10 @@ package com.renjie;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -15,20 +13,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
-import com.renjie.adapter.IMoneyData;
+import com.renjie.adapter.MoneyList2Adatper;
 import com.renjie.adapter.MoneyNewAdapter;
 import com.renjie.tool.HttpRequire;
 import com.renjie.tool.MoneyDAO;
@@ -43,9 +36,7 @@ import com.renjie.tool.Tool;
 public class MoneyList2 extends BaseActivity {
 	private MoneyDAO myDb;
 	private Button topBtn, backBtn;
-	private ListView list;
-	// 生成动态数组，加入数据
-	LinkedList<IMoneyData> listItem;
+	private ListView list;// ,list2; 
 	private MoneyNewAdapter adapter;
 	private List<Node> manager;
 	private MoneyList2Adatper mAdatper;
@@ -61,11 +52,13 @@ public class MoneyList2 extends BaseActivity {
 				mAdatper = new MoneyList2Adatper(manager, MoneyList2.this,
 						true, false, false);
 				list.setAdapter(mAdatper);
+				// list2.setAdapter(mAdatper);
 				break;
 			case 2:
 				mAdatper = new MoneyList2Adatper(manager, MoneyList2.this,
 						false, true, true);
 				list.setAdapter(mAdatper);
+				// list2.setAdapter(mAdatper);
 				break;
 			case 3:
 				backBtn.setVisibility(View.VISIBLE);
@@ -84,12 +77,12 @@ public class MoneyList2 extends BaseActivity {
 	 * 查询年视图，显示每年的开支
 	 */
 	private void queryYearNew() {
+		currentLevel="1"; 
 		// 如果是超级用户，就查询远程数据
 		if (isSuper)
 			new MyListLoader(true, 1, null, null, null).execute("");
 		// 否则查询本地数据库
-		else {
-			listItem = new LinkedList<IMoneyData>();
+		else { 
 			manager = new ArrayList<Node>();
 			// 实例化数据库
 			myDb = new MoneyDAO(this, MoneyDAO.VERSION);
@@ -120,8 +113,7 @@ public class MoneyList2 extends BaseActivity {
 		y = null;
 		m = null;
 		d = null;
-		try {
-			listItem = new LinkedList<IMoneyData>();
+		try { 
 			manager = new ArrayList<Node>();
 			JSONArray arr = HttpRequire.getReport(settings);
 			for (int i = 0, j = arr.size(); i < j; i++) {
@@ -145,6 +137,7 @@ public class MoneyList2 extends BaseActivity {
 	 * @param year
 	 */
 	private void queryListByYearNew(String year) {
+		currentLevel = "2"; 
 		y = year;
 		m = null;
 		d = null;
@@ -208,6 +201,7 @@ public class MoneyList2 extends BaseActivity {
 		y = year;
 		m = month;
 		d = null;
+		currentLevel = "3"; 
 		// 生成动态数组，加入数据
 		manager = new ArrayList<Node>();
 		if (!isSuper) {
@@ -265,6 +259,7 @@ public class MoneyList2 extends BaseActivity {
 		y = year;
 		m = month;
 		d = day;
+		currentLevel = "4";
 		// 生成动态数组，加入数据
 		manager = new ArrayList<Node>();
 		if (!isSuper) {
@@ -325,125 +320,7 @@ public class MoneyList2 extends BaseActivity {
 	public void onResume() {
 		super.onResume();
 		queryYearNew();
-	}
-
-	class MoneyList2Adatper extends BaseAdapter {
-		private List<Node> data;// 用于接收传递过来的Context对象
-		private Context context;
-		private boolean showNext, showSpan, showDesc;
-
-		/**
-		 * 
-		 * @param data
-		 *            数据
-		 * @param context
-		 * @param showNext
-		 *            是否显示下一级别
-		 * @param showSpan
-		 *            是否显示首页
-		 * @param showDesc
-		 *            是否显示描述信息.
-		 */
-		public MoneyList2Adatper(List<Node> data, Context context,
-				boolean showNext, boolean showSpan, boolean showDesc) {
-			super();
-			this.data = data;
-			this.context = context;
-			this.showSpan = showSpan;
-			this.showNext = showNext;
-			this.showDesc = showDesc;
-		}
-
-		@Override
-		public int getCount() {
-			int count = 0;
-			if (null != data) {
-				count = data.size();
-			}
-			return count;
-		}
-
-		@Override
-		public Node getItem(int position) {
-			return data.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder viewHolder = null;
-			if (null == convertView) {
-				viewHolder = new ViewHolder();
-				LayoutInflater mInflater = LayoutInflater.from(context);
-				convertView = mInflater
-						.inflate(R.layout.list_money_item2, null);
-
-				viewHolder.time = (TextView) convertView
-						.findViewById(R.id.time);
-				viewHolder.money = (TextView) convertView
-						.findViewById(R.id.money);
-				viewHolder.next = (ImageView) convertView
-						.findViewById(R.id.next);
-				viewHolder.span = (TextView) convertView
-						.findViewById(R.id.span);
-				viewHolder.desc = (TextView) convertView
-						.findViewById(R.id.m_desc);
-				convertView.setTag(viewHolder);
-			} else {
-				viewHolder = (ViewHolder) convertView.getTag();
-			}
-			if (showNext)
-				viewHolder.next.setVisibility(View.VISIBLE);
-			else
-				viewHolder.next.setVisibility(View.GONE);
-
-			if (showSpan)
-				viewHolder.span.setVisibility(View.VISIBLE);
-			else
-				viewHolder.span.setVisibility(View.GONE);
-
-			viewHolder.desc.setVisibility(View.GONE);
-
-			Node markerItem = getItem(position);
-			if (null != markerItem) {
-				if (showSpan) {
-					String[] s = markerItem.getName().split(",");
-					viewHolder.time.setText(s[0]);
-					viewHolder.span.setText(s[1]);
-				} else {
-					viewHolder.time.setText(markerItem.getName());
-				}
-				viewHolder.money.setText(markerItem.getCode());
-				viewHolder.money.setTag(markerItem.getLevel());
-				viewHolder.next.setTag(markerItem.getId());
-				String str = markerItem.getParam1();
-				if (str != null && !"null".equals(str) && !"".equals(str)) {
-					viewHolder.desc.setVisibility(View.VISIBLE);
-					viewHolder.desc.setText(str);
-				} else
-					viewHolder.desc.setVisibility(View.GONE);
-			}
-
-			return convertView;
-		}
-
-		class ViewHolder {
-			// 时间
-			TextView time;
-			// 是否出现打开下一级别的图标
-			ImageView next;
-			// 金额
-			TextView money;
-			TextView span;
-			// 描述信息
-			TextView desc;
-		}
-
-	}
+	} 
 
 	private SharedPreferences settings;
 	private static final int DIALOG_KEY = 0;
@@ -533,6 +410,7 @@ public class MoneyList2 extends BaseActivity {
 		setContentView(R.layout.list_money2);
 		topBtn = (Button) findViewById(R.id.top_btn);
 		list = (ListView) findViewById(R.id.ListView);
+		// list2 = (ListView) findViewById(R.id.ListView2);
 		backBtn = (Button) findViewById(R.id.backbtn);
 		// 初始化的时候不显示上级按钮.
 		backBtn.setVisibility(View.GONE);
@@ -542,6 +420,8 @@ public class MoneyList2 extends BaseActivity {
 		registerForContextMenu(list);
 		prepareListener();
 	}
+
+	private String currentLevel = "1";
 
 	protected void prepareListener() {
 		// 设计返回按钮
@@ -554,28 +434,32 @@ public class MoneyList2 extends BaseActivity {
 		// 点击上级按钮.
 		backBtn.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				if (y != null && m != null) {
+				System.out.println(currentLevel+"----currentLevel(点击前。。。。)");
+				if ("3".equals(currentLevel)) {
 					queryListByYearNew(y);
-				} else if (y != null && m == null) {
+				} else if ("2".equals(currentLevel)) {
 					queryYearNew();
+				} else if ("4".equals(currentLevel)) {
+					queryListByYearAndMonthNew(y, m);
 				}
 			}
 		});
+
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				final String id = "" + arg1.findViewById(R.id.next).getTag();
 				String level = "" + arg1.findViewById(R.id.money).getTag();
 				if ("1".equals(level)) {
-					queryListByYearNew(id + "");
+					queryListByYearNew(id + ""); 
 				} else if ("2".equals(level)) {
 					String[] datas = id.split(",");
-					queryListByYearAndMonthNew(datas[0], datas[1]);
+					queryListByYearAndMonthNew(datas[0], datas[1]); 
 				} else if ("3".equals(level)) {
 					String[] datas = id.split(",");
 					queryListByYearAndMonthAndDayNew(datas[0], datas[1],
-							datas[2]);
-				} else if ("4".equals(level)) {
+							datas[2]); 
+				} else if ("4".equals(level)&&!isSuper) {
 					confirm(new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
@@ -583,7 +467,7 @@ public class MoneyList2 extends BaseActivity {
 							showMess(R.string.delete_success);
 							queryListByYearAndMonthAndDayNew(y, m, d);
 						}
-					},R.string.delete_confirm);
+					}, R.string.delete_confirm);
 				}
 			}
 		});

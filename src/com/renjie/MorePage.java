@@ -27,6 +27,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -50,9 +51,12 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONArray;
 import com.renjie.adapter.DiaryAdapter;
 import com.renjie.adapter.GongguoAdapter;
 import com.renjie.adapter.MoneyAdapter;
+import com.renjie.adapter.MoneyList2Adatper;
+import com.renjie.tool.HttpRequire;
 import com.renjie.tool.MoneyDAO;
 import com.renjie.tool.Tool;
 
@@ -68,7 +72,8 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			R.string.more_backupall, R.string.more_sendmoney,
 			R.string.more_senddiary, R.string.more_sendgongguo,
 			R.string.more_gongguolist, R.string.more_diarylist,
-			R.string.more_moneylist, R.string.more_config, R.string.more_tree };
+			R.string.more_moneylist, R.string.more_config, R.string.more_tree,
+			R.string.more_moneyreport };
 	private MoneyDAO myDb;
 	private Button saveGonguo_btn, saveDiary_btn;
 	String remoteMoneyUrl = "http://REMOTEIP:PORT/money/superconsole!importPhoneMoney.do";
@@ -78,18 +83,26 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	public static final String REMOTEREPORT_BY_YEAR = "http://REMOTEIP:PORT/money/superconsole!getReportOutByYear.do?year=YEAR";
 	public static final String REMOTEREPORT_BY_MONTH = "http://REMOTEIP:PORT/money/superconsole!getReportOutByMonth.do?year=YEAR&month=MONTH";
 	public static final String REMOTEREPORT_BY_DAY = "http://REMOTEIP:PORT/money/superconsole!getReportOutInDay.do?day=DAY";
+	public static final String REMOTEREPORT_BIG_TYPE = "http://REMOTEIP:PORT/money/superconsole!reportSumByBigType.do";
+	public static final String REMOTEREPORT_SMALL_TYPE = "http://REMOTEIP:PORT/money/superconsole!reportSumBySmallType.do?bigType=BIGTYPE";
+	public static final String REMOTEREPORT_TYPE_YEAR = "http://REMOTEIP:PORT/money/superconsole!reportSumBySmallTypeInYear.do?tallyType=TALLYTYPE";
+	public static final String REMOTEREPORT_TYPE_MONTH = "http://REMOTEIP:PORT/money/superconsole!reportSumBySmallTypeInMonth.do?tallyType=TALLYTYPE&year=YEAR";
+	public static final String REMOTEREPORT_TYPE_DAY = "http://REMOTEIP:PORT/money/superconsole!reportSumBySmallTypeInDay.do?tallyType=TALLYTYPE&year=YEAR&month=MONTH";
+	public static final String REMOTEREPORT_TYPE_IN_DAY = "http://REMOTEIP:PORT/money/superconsole!reportSumBySmallTypeInSomeDay.do?tallyType=TALLYTYPE&year=YEAR&month=MONTH&day=DAY";
+
 	private final static int SUCCESS = 1;
 	private int myyear;
 	private int mymonth;
 	private int myday;
 	private int hour, minute;
-	private Button dateBtn;
-	private Button timeBtn;
+	private Button dateBtn, leavediary, leavegongguo;
+	private Button timeBtn, bbackBtn, top_btn;
 	private ImageView jiamiImg;
 	private EditText contentEdit;
 	private Button returnbtn;
+	private TextView report_title;
 	private ListView gongguolist;
-	private ListView diarylist, moneylist;
+	private ListView diarylist, moneylist, reportMoneylist;
 	Intent intent;
 	static final int DATE_DIALOG_ID = 0;
 	private TableLayout table;
@@ -190,7 +203,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			public void onClick(DialogInterface dialog, int which) {
 				myDb.deleteAllMoney();
 			}
-		},R.string.delete_confirm);
+		}, R.string.delete_confirm);
 	}
 
 	ProgressDialog myDialog = null;
@@ -349,6 +362,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	 */
 	private void gotoGongguo() {
 		setContentView(R.layout.gongguo_index);
+		leavegongguo = (Button) findViewById(R.id.leavegongguo_btn);
 		dateBtn = (Button) findViewById(R.id.chooseTime_btn);
 		plan = (EditText) findViewById(R.id.plan);
 		planShow = (TextView) findViewById(R.id.plan_show);
@@ -414,6 +428,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	 */
 	private void gotoDiary() {
 		setContentView(R.layout.diary_index);
+		leavediary = (Button) findViewById(R.id.leavediary_btn);
 		dateBtn = (Button) findViewById(R.id.diaryDate);
 		timeBtn = (Button) findViewById(R.id.diaryTime);
 		jiamiImg = (ImageView) findViewById(R.id.jiami);
@@ -454,7 +469,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 				showMess(R.string.delete_success);
 				initDiaryList();
 			}
-		},R.string.delete_confirm);
+		}, R.string.delete_confirm);
 	}
 
 	private void deleteMoney(final long sno) {
@@ -467,7 +482,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 						Toast.LENGTH_SHORT).show();
 				initMoneyList();
 			}
-		},R.string.delete_confirm);
+		}, R.string.delete_confirm);
 	}
 
 	/**
@@ -483,7 +498,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 				showMess(R.string.delete_success);
 				initGongguoList();
 			}
-		},R.string.delete_confirm);
+		}, R.string.delete_confirm);
 	}
 
 	/**
@@ -558,6 +573,285 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		moneylist.setAdapter(adapter);
 	}
 
+	/* 下面是全部的显示列表的东西 */
+	private static final int DIALOG_KEY = 1;
+	private ProgressDialog dialog;
+	private String y, m, d, moneyType, bigType, currentLevel = null;
+	private List<Node> manager;
+	private MoneyList2Adatper mAdatper;
+	private Button topBtn, backBtn;
+
+	public Handler myHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case 1:
+				mAdatper = new MoneyList2Adatper(manager, MorePage.this, true,
+						false, false);
+				reportMoneylist.setAdapter(mAdatper);
+				// list2.setAdapter(mAdatper);
+				break;
+			case 2:
+				mAdatper = new MoneyList2Adatper(manager, MorePage.this, false,
+						true, true);
+				reportMoneylist.setAdapter(mAdatper);
+				// list2.setAdapter(mAdatper);
+				break;
+			case 3:
+				bbackBtn.setVisibility(View.VISIBLE);
+				break;
+			case 4:
+				bbackBtn.setVisibility(View.GONE);
+				break;
+			default:
+				super.hasMessages(msg.what);
+				break;
+			}
+		}
+	};
+
+	/**
+	 * 解析远程的数据
+	 */
+	private void queryInBigType() {
+		y = null;
+		m = null;
+		d = null;
+		moneyType = null;
+		bigType = null;
+		currentLevel = "1";
+		try {
+			manager = new ArrayList<Node>();
+			JSONArray arr = HttpRequire.getReportByBigType(settings);
+			for (int i = 0, j = arr.size(); i < j; i++) {
+				Node node1 = new Node();
+				JSONArray a = arr.getJSONArray(i);
+				node1.setName("[" + a.get(0) + "]");
+				node1.setId("" + a.get(2));
+				node1.setLevel(1);
+				node1.setCode(a.get(1) + "");
+				manager.add(node1);
+			}
+			myHandler.sendEmptyMessage(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void queryInSmallType(String bg) {
+		y = null;
+		m = null;
+		d = null;
+		bigType = bg;
+		currentLevel = "2";
+		moneyType = null;
+		try {
+			manager = new ArrayList<Node>();
+			JSONArray arr = HttpRequire.getReportBySmallType(settings, bg);
+			for (int i = 0, j = arr.size(); i < j; i++) {
+				Node node1 = new Node();
+				JSONArray a = arr.getJSONArray(i);
+				node1.setName("[" + a.get(0) + "]");
+				node1.setId(bg + "," + a.get(2));
+				node1.setLevel(2);
+				node1.setCode(a.get(1) + "");
+				manager.add(node1);
+			}
+			myHandler.sendEmptyMessage(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void queryInSmallTypeInYear(String bg) {
+		y = null;
+		m = null;
+		d = null;
+		currentLevel = "3";
+		moneyType = bg;
+		try {
+			manager = new ArrayList<Node>();
+			JSONArray arr = HttpRequire
+					.getReportBySmallTypeInYear(settings, bg);
+			for (int i = 0, j = arr.size(); i < j; i++) {
+				Node node1 = new Node();
+				JSONArray a = arr.getJSONArray(i);
+				node1.setName("[" + a.get(0) + "]年");
+				node1.setId(bg + "," + a.get(0));
+				node1.setLevel(3);
+				node1.setCode(a.get(1) + "");
+				manager.add(node1);
+			}
+			myHandler.sendEmptyMessage(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void queryInSmallTypeInMonth(String bg, String year) {
+		y = year;
+		m = null;
+		d = null;
+		currentLevel = "4";
+		moneyType = bg;
+		try {
+			manager = new ArrayList<Node>();
+			JSONArray arr = HttpRequire.getReportBySmallTypeInMonth(settings,
+					bg, y);
+			for (int i = 0, j = arr.size(); i < j; i++) {
+				Node node1 = new Node();
+				JSONArray a = arr.getJSONArray(i);
+				node1.setName(year+"-"+ a.get(0) + "月");
+				node1.setId(bg + "," + year + "," + a.get(0));
+				node1.setLevel(4);
+				node1.setCode(a.get(1) + "");
+				manager.add(node1);
+			}
+			myHandler.sendEmptyMessage(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 查询一天的具体消费记录.
+	 * 
+	 * @param bg
+	 * @param year
+	 * @param month
+	 */
+	private void queryInSmallTypeInADay(String bg, String year, String month,
+			String day) {
+		y = year;
+		m = month;
+		currentLevel = "6";
+		d = day;
+		moneyType = bg;
+		try {
+			manager = new ArrayList<Node>();
+			JSONArray arr = HttpRequire.getReportBySmallTypeInSomeDay(settings,
+					bg, year, month, day);
+			for (int i = 0, j = arr.size(); i < j; i++) {
+				Node node1 = new Node();  
+				JSONArray a = arr.getJSONArray(i); 
+				
+				node1.setName(a.get(0) + "," + a.get(1));
+				node1.setId(a.get(0) + "," + a.get(1));
+				node1.setLevel(6);
+				node1.setParam1(a.get(3) + "");
+				node1.setCode(a.get(2) + "");
+				
+				manager.add(node1);
+			}
+			myHandler.sendEmptyMessage(2);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void queryInSmallTypeInDay(String bg, String year, String month) {
+		y = year;
+		m = month;
+		currentLevel = "5";
+		d = null;
+		moneyType = bg;
+		try {
+			manager = new ArrayList<Node>();
+			JSONArray arr = HttpRequire.getReportBySmallTypeInDay(settings, bg,
+					year, month);
+			for (int i = 0, j = arr.size(); i < j; i++) {
+				Node node1 = new Node();
+				JSONArray a = arr.getJSONArray(i);
+				node1.setName("[" + a.get(0) + "]");
+				node1.setId(bg + "," + year + "," + month + "," + a.get(0));
+				node1.setLevel(5);
+				node1.setCode(a.get(1) + "");
+				manager.add(node1);
+			}
+			myHandler.sendEmptyMessage(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 显示出现按照金额类别分类的金额报表.
+	 * 
+	 * @author Administrator
+	 * 
+	 */
+	private class MyListLoader extends AsyncTask<String, String, String> {
+
+		private boolean showDialog;
+		private int type;
+		private String y;
+		private String m;
+		private String d;
+		private String tp, bigTp;
+
+		public MyListLoader(boolean showDialog, int type, String year,
+				String month, String tp, String bigTp, String day) {
+			this.showDialog = showDialog;
+			this.type = type;
+			this.y = year;
+			this.bigTp = bigTp;
+			this.m = month;
+			this.d = day;
+			this.tp = tp;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// 执行过程中显示进度栏.
+			if (showDialog) {
+				showDialog(DIALOG_KEY);
+			}
+		}
+
+		public String doInBackground(String... p) {
+			if (type == 1)
+				queryInBigType();
+			else if (type == 2) {
+				queryInSmallType(bigTp);
+			} else if (type == 3) {
+				queryInSmallTypeInYear(tp);
+			} else if (type == 4) {
+				queryInSmallTypeInMonth(tp, y);
+			} else if (type == 5) {
+				queryInSmallTypeInDay(tp, y, m);
+			} else if (type == 6) {
+				queryInSmallTypeInADay(tp, y, m, d);
+			}
+			return "";
+		}
+
+		@Override
+		public void onPostExecute(String Re) {
+			/**
+			 * 完成的时候就取消进度栏.
+			 */
+			if (showDialog) {
+				removeDialog(DIALOG_KEY);
+			}
+			if (type == 4 || type == 2 || type == 3 || type == 5 || type == 6) {
+				myHandler.sendEmptyMessage(3);
+			} else {
+				myHandler.sendEmptyMessage(4);
+			}
+		}
+
+		@Override
+		protected void onCancelled() {
+			// 取消进度栏.
+			if (showDialog) {
+				removeDialog(DIALOG_KEY);
+			}
+		}
+	}
+
+	private void initMoneyList3() {
+		new MyListLoader(true, 1, null, null, null, null, null).execute("");
+	}
+
 	/**
 	 * 日记本列表.
 	 */
@@ -575,6 +869,22 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		moneylist = (ListView) findViewById(R.id.ListView);
 		returnbtn = (Button) findViewById(R.id.returnbtn);
 		initMoneyList();
+
+		// 调用绑定事件的私有方法。
+		prepareListener();
+	}
+
+	/**
+	 * 显示按照类别分类的金额报表.
+	 */
+	private void moneyList3() {
+		setContentView(R.layout.list_money3);
+		reportMoneylist = (ListView) findViewById(R.id.ListView);
+		bbackBtn = (Button) findViewById(R.id.bbackbtn);
+		report_title = (TextView) findViewById(R.id.report_title);
+		top_btn = (Button) findViewById(R.id.top_btn);
+		initMoneyList3();
+
 		// 调用绑定事件的私有方法。
 		prepareListener();
 	}
@@ -608,7 +918,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	private void initGridView() {
 		GridView gridview = (GridView) findViewById(R.id.GridView);
 		ArrayList<HashMap<String, Object>> meumList = new ArrayList<HashMap<String, Object>>();
-		for (int i = 0; i < 11; i++) {
+		for (int i = 0; i < allitem.length; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("ItemImage", allMages[i % 3]);
 			map.put("ItemText", getText(allitem[i]).toString());
@@ -668,8 +978,16 @@ public class MorePage extends BaseActivity implements OnClickListener {
 					startActivity(openUrl);
 					break;
 				case 10:
+
 					openUrl.setClass(MorePage.this, TreeListDemoActivity.class);
 					startActivity(openUrl);
+					break;
+				case 11:
+					if (isSuper) {
+						moneyList3();
+					} else {
+						alert("没有权限");
+					}
 					break;
 				default:
 					break;
@@ -728,6 +1046,12 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	 */
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
+		case DIALOG_KEY:
+			dialog = new ProgressDialog(this);
+			dialog.setMessage("正在查询...");
+			dialog.setIndeterminate(true);
+			dialog.setCancelable(true);
+			return dialog;
 		case DATE_DIALOG_ID:
 			return new DatePickerDialog(this, mDateSetListener, myyear,
 					mymonth, myday);
@@ -750,11 +1074,40 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		if (dateBtn != null) {
 			dateBtn.setOnClickListener(this);
 		}
+		if (leavegongguo != null) {
+			leavegongguo.setOnClickListener(this);
+		}
+		if(report_title!=null)
+		report_title.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				initFirstPage();
+			}
+		});
 		if (saveGonguo_btn != null) {
 			saveGonguo_btn.setOnClickListener(this);
 		}
+		if (leavediary != null) {
+			leavediary.setOnClickListener(this);
+		}
 		if (returnbtn != null) {
 			returnbtn.setOnClickListener(this);
+		}
+		if (backBtn != null) {
+			backBtn.setOnClickListener(this);
+		}
+		if (top_btn != null) {
+			top_btn.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View arg0) {
+					initMoneyList3(); 
+				}
+			});
+		}
+		if (bbackBtn != null) {
+			bbackBtn.setOnClickListener(this);
 		}
 		if (saveDiary_btn != null) {
 			saveDiary_btn.setOnClickListener(this);
@@ -784,6 +1137,38 @@ public class MorePage extends BaseActivity implements OnClickListener {
 							deleteGonguo(sno);
 						}
 					});
+		if (reportMoneylist != null)
+			reportMoneylist
+					.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+						public void onItemClick(AdapterView<?> arg0, View arg1,
+								int arg2, long arg3) {
+							final String id = ""
+									+ arg1.findViewById(R.id.next).getTag();
+							String level = ""
+									+ arg1.findViewById(R.id.money).getTag();
+							if ("1".equals(level)) {
+								new MyListLoader(true, 2, null, null, null, id
+										+ "", null).execute("");
+							} else if ("2".equals(level)) {
+								String[] datas = id.split(",");
+								new MyListLoader(true, 3, null, null, datas[1],
+										datas[0], null).execute("");
+							} else if ("3".equals(level)) {
+								String[] datas = id.split(",");
+								new MyListLoader(true, 4, datas[1], null,
+										datas[0], null, null).execute("");
+							} else if ("4".equals(level)) {
+								String[] datas = id.split(",");
+								new MyListLoader(true, 5, datas[1], datas[2],
+										datas[0], null, null).execute("");
+							} else if ("5".equals(level)) {
+								String[] datas = id.split(",");
+								new MyListLoader(true, 6, datas[1], datas[2],
+										datas[0], null, datas[3]).execute("");
+							}
+						}
+					});
+
 		if (diarylist != null)
 			diarylist
 					.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -810,6 +1195,28 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	public void onClick(View v) {
 		if (v.getId() == R.id.chooseTime_btn || v.getId() == R.id.diaryDate) {
 			showDialog(DATE_DIALOG_ID);
+		} else if ( v.getId() == R.id.leavediary_btn
+				|| v.getId() == R.id.leavegongguo_btn) {
+			initFirstPage();
+		} else if (v.getId() == R.id.bbackbtn) {
+			if ("2".equals(currentLevel)) {
+				new MyListLoader(true, 1, null, null, null, null, null)
+						.execute("");
+			} else if ("3".equals(currentLevel)) {
+				// 按照小类别进行统计.
+				new MyListLoader(true, 2, null, null, null, bigType, null)
+						.execute("");
+			} else if ("4".equals(currentLevel)) {
+				// 按照小类别还有年份统计.
+				new MyListLoader(true, 3, null, null, moneyType, null, null)
+						.execute("");
+			} else if ("5".equals(currentLevel)) {
+				new MyListLoader(true, 4, y, null, moneyType, null, null)
+						.execute("");
+			} else if ("6".equals(currentLevel)) {
+				new MyListLoader(true, 5, y, m, moneyType, null, null)
+						.execute("");
+			}
 		}
 		// 保存功过信息.
 		else if (v.getId() == R.id.saveGonguo_btn) {
