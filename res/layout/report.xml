@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainRLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#000000" >
+
+    <!-- 自定义滑动控件 -->
+
+    <com.ericssonlabs.ScrollLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ScrollLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="visible" >
+
+        <!-- 每一页的布局均以一个RelativeLayout来控制，后面类似，这里一共四个 -->
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <FrameLayout
+                android:id="@+id/title"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/menu_height"
+                android:padding="0dp" >
+
+                <TextView
+                    android:id="@+id/menu_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/menu_height"
+                    android:layout_gravity="center"
+                    android:background="@drawable/topnavbg"
+                    android:gravity="center"
+                    android:text="@string/main_report"
+                    android:textColor="@drawable/white"
+                    android:textSize="@dimen/titleTextSize" />
+
+                <Button
+                    android:id="@+id/backbtn"
+                    android:layout_width="@dimen/title_btn_width"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:padding="0dp"
+                    android:text="@string/con_back"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/top_btn"
+                    android:layout_width="@dimen/title_btn_width"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right"
+                    android:padding="0dp"
+                    android:text="@string/con_returnTop"
+                    android:textSize="15sp" />
+            </FrameLayout>
+
+            <ListView
+                android:id="@+id/ListView"
+                android:layout_width="fill_parent"
+                android:layout_height="100dp"
+                android:layout_below="@id/title" >
+            </ListView>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <!-- 点击该按钮后就进入OtherActivit了 -->
+
+            <FrameLayout
+                android:id="@+id/title2"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/menu_height"
+                android:padding="0dp" >
+
+                <TextView
+                    android:id="@+id/menu_name2"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/menu_height"
+                    android:layout_gravity="center"
+                    android:background="@drawable/topnavbg"
+                    android:gravity="center"
+                    android:text="@string/main_report"
+                    android:textColor="@drawable/white"
+                    android:textSize="@dimen/titleTextSize" />
+
+                <Button
+                    android:id="@+id/backbtn2"
+                    android:layout_width="@dimen/title_btn_width"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:padding="0dp"
+                    android:text="@string/con_back"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/top_btn2"
+                    android:layout_width="@dimen/title_btn_width"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right"
+                    android:padding="0dp"
+                    android:text="@string/con_returnTop"
+                    android:textSize="15sp" />
+            </FrameLayout>
+            <!--
+            <ListView
+                android:id="@+id/ListView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/title2" >
+            </ListView>
+            -->
+        </RelativeLayout>
+    </com.ericssonlabs.ScrollLayout>
+
+    <!-- 这个布局是下面显示的小圆点的布局，其中ImageView的数量要与上面RelativeLayout的数量对应 -->
+
+    <LinearLayout
+        android:id="@+id/llayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:orientation="horizontal"
+        android:visibility="visible" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:clickable="true"
+            android:padding="5dp"
+            android:src="@drawable/page_indicator_bg" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:clickable="true"
+            android:padding="5dp"
+            android:src="@drawable/page_indicator_bg" />
+    </LinearLayout>
+
+    <!-- 这个布局是最后点击按钮后启动新界面的一个动画效果 -->
+
+    <LinearLayout
+        android:id="@+id/animLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="gone" >
+
+        <LinearLayout
+            android:id="@+id/leftLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/whatsnew_left" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/whatsnew_left_m" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rightLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/whatsnew_right_m" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/whatsnew_right" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
