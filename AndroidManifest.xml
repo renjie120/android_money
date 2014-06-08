@@ -22,7 +22,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver android:name="com.renjie.tool.MyAlarmReceiver" >
+            <intent-filter>
+                <action android:name="com.renjie.money" />
+            </intent-filter>
+        </receiver>
+
         <activity android:name=".HomePage" >
+        </activity>
+        <activity android:name=".ReminderInfo" >
         </activity>
         <activity android:name=".MorePage" >
         </activity>

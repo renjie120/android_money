@@ -9,8 +9,9 @@ public class Tool {
 	public static final String SUPERPASS = "super_pass";
 	public static final int DIARY_TYPE_COMMON = 0;
 	public static final int DIARY_TYPE_LICAI = 1;
-	public static final int DIARY_TYPE_PLAN = 2;
+	public static final int DIARY_TYPE_PLAN = 2; 
 	public static final String[] DIARY_TYPES = { "普通", "理财", "计划" };
+	public static final String[] TIP_TYPES = { "一次","每天","每周","每月","自定义" };
 	public static final String[] inTypes = { "收入", "奖金", "工资", "报销差补" };
 
 	/**

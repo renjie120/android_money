@@ -37,6 +37,15 @@
         <item name="android:text">@string/con_save</item>
     </style>
 
+    <style name="deleteTipStyle">
+        <item name="android:layout_width">250dp</item>
+        <item name="android:layout_height">45dip</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:text">@string/delete_tip</item>
+    </style>
+
     <style name="redstyle">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">#FF0000</item>

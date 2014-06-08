@@ -13,6 +13,7 @@
     <string name="timestr">收支日期</string>
     <string name="timestr2">记录日期</string>
     <string name="diary_type">日记类别</string>
+    <string name="tip_type">提醒类别</string>
     <string name="moneystr">收支金额</string>
     <string name="sortstr">收支类别</string>
     <string name="moneydesc">收支说明</string>
@@ -29,6 +30,7 @@
     <string name="msg_return">确定要返回么?</string>
     <string name="con_info_msg">信息提示</string>
     <string name="con_save">保存</string>
+    <string name="delete_tip">清除提醒</string>
     <string name="save_success">保存成功</string>
     <string name="config_remoteport">端口</string>
     <string name="save_failure">保存失败</string>
@@ -89,6 +91,7 @@
     <string name="more_gongguo">功过记录</string>
     <string name="more_diary">私人日记</string>
     <string name="more_moneyreport">类别报表</string>
+    <string name="more_tip">设置提醒</string>
     <string name="more_sendgongguo">同步功过数据</string>
     <string name="more_sendmoney">同步金额数据</string>
     <string name="more_senddiary">同步日记数据</string>
@@ -100,9 +103,12 @@
     <string name="gongguo_list">功过列表</string>
     <string name="diary_list">日记列表</string>
     <string name="diary_title">日记本</string>
+    <string name="tip_title">提醒</string>
     <string name="diary_date">发生日期</string>
+    <string name="tip_date">提醒日期</string>
     <string name="diary_time">时间</string>
     <string name="diary_content">日记内容</string>
+    <string name="tip_content">提醒内容</string>
     <string name="diary_jiami">日记加密</string>
     <string name="gongguo_plan">计    划</string>
     <string name="gongguo_planmake">制定计划</string>

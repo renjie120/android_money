@@ -18,4 +18,6 @@
     <dimen name="title_btn_size">14sp</dimen>
     <dimen name="titleTextSize">16sp</dimen>
 
+    <color name="white">#ffffff</color>
+
 </resources>

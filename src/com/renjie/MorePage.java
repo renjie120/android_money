@@ -18,9 +18,13 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,15 +53,20 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONArray;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
 import com.renjie.adapter.DiaryAdapter;
 import com.renjie.adapter.GongguoAdapter;
 import com.renjie.adapter.MoneyAdapter;
 import com.renjie.adapter.MoneyList2Adatper;
 import com.renjie.tool.HttpRequire;
 import com.renjie.tool.MoneyDAO;
+import com.renjie.tool.Reminder;
 import com.renjie.tool.Tool;
 
 /**
@@ -73,9 +82,9 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			R.string.more_senddiary, R.string.more_sendgongguo,
 			R.string.more_gongguolist, R.string.more_diarylist,
 			R.string.more_moneylist, R.string.more_config, R.string.more_tree,
-			R.string.more_moneyreport };
+			R.string.more_moneyreport, R.string.more_tip };
 	private MoneyDAO myDb;
-	private Button saveGonguo_btn, saveDiary_btn;
+	private Button saveGonguo_btn, saveDiary_btn, saveTip_btn;
 	String remoteMoneyUrl = "http://REMOTEIP:PORT/money/superconsole!importPhoneMoney.do";
 	String remoteDiaryUrl = "http://REMOTEIP:PORT/money/superconsole!importPhoneDiary.do";
 	String remoteGongguoUrl = "http://REMOTEIP:PORT/money/superconsole!importPhoneGongguo.do";
@@ -98,13 +107,13 @@ public class MorePage extends BaseActivity implements OnClickListener {
 	private Button dateBtn, leavediary, leavegongguo;
 	private Button timeBtn, bbackBtn, top_btn;
 	private ImageView jiamiImg;
-	private EditText contentEdit;
+	private EditText contentEdit, tipContent;
 	private Button returnbtn;
 	private TextView report_title;
 	private ListView gongguolist;
 	private ListView diarylist, moneylist, reportMoneylist;
 	Intent intent;
-	static final int DATE_DIALOG_ID = 0;
+	static final int DATE_DIALOG_ID = 0, TIME_DIALOG_ID = 2;
 	private TableLayout table;
 	private SharedPreferences settings;
 
@@ -421,7 +430,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		return newDate;
 	}
 
-	private Spinner diaryType;
+	private Spinner diaryType, tip_tp;
 
 	/**
 	 * 跳转到日记本程序.
@@ -700,7 +709,7 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			for (int i = 0, j = arr.size(); i < j; i++) {
 				Node node1 = new Node();
 				JSONArray a = arr.getJSONArray(i);
-				node1.setName(year+"-"+ a.get(0) + "月");
+				node1.setName(year + "-" + a.get(0) + "月");
 				node1.setId(bg + "," + year + "," + a.get(0));
 				node1.setLevel(4);
 				node1.setCode(a.get(1) + "");
@@ -731,15 +740,15 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			JSONArray arr = HttpRequire.getReportBySmallTypeInSomeDay(settings,
 					bg, year, month, day);
 			for (int i = 0, j = arr.size(); i < j; i++) {
-				Node node1 = new Node();  
-				JSONArray a = arr.getJSONArray(i); 
-				
+				Node node1 = new Node();
+				JSONArray a = arr.getJSONArray(i);
+
 				node1.setName(a.get(0) + "," + a.get(1));
 				node1.setId(a.get(0) + "," + a.get(1));
 				node1.setLevel(6);
 				node1.setParam1(a.get(3) + "");
 				node1.setCode(a.get(2) + "");
-				
+
 				manager.add(node1);
 			}
 			myHandler.sendEmptyMessage(2);
@@ -989,11 +998,33 @@ public class MorePage extends BaseActivity implements OnClickListener {
 						alert("没有权限");
 					}
 					break;
+				case 12:
+					goTip();
+					break;
 				default:
 					break;
 				}
 			}
 		});
+	}
+
+	/**
+	 * 打开提醒界面
+	 * 
+	 */
+	public void goTip() {
+		setContentView(R.layout.tip_index);
+		dateBtn = (Button) findViewById(R.id.tipDate);
+		timeBtn = (Button) findViewById(R.id.tipTime);
+		tipContent = (EditText) findViewById(R.id.tipContent);
+		tip_tp = (Spinner) findViewById(R.id.tip_tp);
+		saveTip_btn = (Button) findViewById(R.id.saveTip_btn);
+		dateBtn.setText(getToday());
+		timeBtn.setText(hour + ":" + minute);
+		createSimpleSipnner(tip_tp, R.array.tiptype);
+
+		// 调用绑定事件的私有方法。
+		prepareListener();
 	}
 
 	private boolean isSuper;
@@ -1030,6 +1061,19 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		}
 	};
 
+	private TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+
+		@Override
+		public void onTimeSet(TimePicker arg0, int h, int m) {
+			hour = h;
+			minute = m;
+			String d = new StringBuilder().append(hour).append(":")
+					.append(minute).toString();
+			timeBtn.setText(d);
+		}
+
+	};
+
 	public static Date getDate(String dateStr) {
 		SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date();
@@ -1055,6 +1099,9 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		case DATE_DIALOG_ID:
 			return new DatePickerDialog(this, mDateSetListener, myyear,
 					mymonth, myday);
+		case TIME_DIALOG_ID:
+			return new TimePickerDialog(this, mTimeSetListener, hour, minute,
+					true);
 		}
 		return null;
 	}
@@ -1074,17 +1121,23 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		if (dateBtn != null) {
 			dateBtn.setOnClickListener(this);
 		}
+		if (saveTip_btn != null) {
+			saveTip_btn.setOnClickListener(this);
+		}
+		if (timeBtn != null) {
+			timeBtn.setOnClickListener(this);
+		}
 		if (leavegongguo != null) {
 			leavegongguo.setOnClickListener(this);
 		}
-		if(report_title!=null)
-		report_title.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				initFirstPage();
-			}
-		});
+		if (report_title != null)
+			report_title.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					initFirstPage();
+				}
+			});
 		if (saveGonguo_btn != null) {
 			saveGonguo_btn.setOnClickListener(this);
 		}
@@ -1099,10 +1152,10 @@ public class MorePage extends BaseActivity implements OnClickListener {
 		}
 		if (top_btn != null) {
 			top_btn.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View arg0) {
-					initMoneyList3(); 
+					initMoneyList3();
 				}
 			});
 		}
@@ -1193,9 +1246,12 @@ public class MorePage extends BaseActivity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.chooseTime_btn || v.getId() == R.id.diaryDate) {
+		if (v.getId() == R.id.chooseTime_btn || v.getId() == R.id.diaryDate
+				|| v.getId() == R.id.tipDate) {
 			showDialog(DATE_DIALOG_ID);
-		} else if ( v.getId() == R.id.leavediary_btn
+		} else if (v.getId() == R.id.tipTime || v.getId() == R.id.diaryTime) {
+			showDialog(TIME_DIALOG_ID);
+		} else if (v.getId() == R.id.leavediary_btn
 				|| v.getId() == R.id.leavegongguo_btn) {
 			initFirstPage();
 		} else if (v.getId() == R.id.bbackbtn) {
@@ -1260,6 +1316,121 @@ public class MorePage extends BaseActivity implements OnClickListener {
 			int dt = "普通".equals(diaryType.getSelectedItem().toString()) ? Tool.DIARY_TYPE_COMMON
 					: Tool.DIARY_TYPE_LICAI;
 			myDb.insertDiary(date, time, content, "0", jiami, dt + "");
+			showMess(R.string.save_success);
+
+			initFirstPage();
+		}// 保存提醒记录
+		else if (v.getId() == R.id.saveTip_btn) {
+			String time = timeBtn.getText().toString();
+			String date = dateBtn.getText().toString();
+			String _tipContent = tipContent.getText().toString();
+			int _tip_tp = 0;
+			for (String s : Tool.TIP_TYPES) {
+				if (s.equals(tip_tp.getSelectedItem().toString())) {
+					break;
+				} else {
+					_tip_tp++;
+				}
+			}
+			String _h = time.split(":")[0];
+			String _mi = time.split(":")[1];
+			String _m = date.split("-")[1];
+			String _y = date.split("-")[0];
+			String _d = date.split("-")[2];
+			try {
+				if ("一次".equals(tip_tp.getSelectedItem().toString())) {
+					AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+					Intent intent = new Intent("com.renjie.money");
+					intent.putExtra("tipContent", _tipContent);
+					intent.putExtra("time", time);
+					intent.putExtra("date", date);
+					intent.putExtra("tip_tp", _tip_tp+"");
+					SimpleDateFormat formatter2 = new SimpleDateFormat(
+							"yyyy-MM-dd HH:mm");
+					Date d = formatter2.parse(date + " " + time); 
+
+					PendingIntent sender = PendingIntent.getBroadcast(
+							MorePage.this, 0, intent,
+							PendingIntent.FLAG_CANCEL_CURRENT);
+					// 闹铃间隔， 这里设为1分钟闹一次，在第2步我们将每隔1分钟收到一次广播
+					am.set(AlarmManager.RTC_WAKEUP, d.getTime(), sender);
+				} else if ("每天".equals(tip_tp.getSelectedItem().toString())) {
+					AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+					Intent intent = new Intent("com.renjie.money");
+					intent.putExtra("tipContent", _tipContent);
+					intent.putExtra("time", time);
+					intent.putExtra("date", date);
+					intent.putExtra("tip_tp", _tip_tp+"");
+					SimpleDateFormat formatter2 = new SimpleDateFormat(
+							"yyyy-MM-dd HH:mm");
+					Date d = formatter2.parse(date + " " + time); 
+
+					PendingIntent sender = PendingIntent.getBroadcast(
+							MorePage.this, 0, intent,
+							PendingIntent.FLAG_CANCEL_CURRENT);
+					// 闹铃间隔， 这里设为1分钟闹一次，在第2步我们将每隔1分钟收到一次广播
+					am.setRepeating(AlarmManager.RTC_WAKEUP, d.getTime(),
+							1000 * 60 * 60 * 24, sender);
+				} else if ("每周".equals(tip_tp.getSelectedItem().toString())) {
+					AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+					Intent intent = new Intent("com.renjie.money");
+					intent.putExtra("tipContent", _tipContent);
+					intent.putExtra("time", time);
+					intent.putExtra("date", date);
+					intent.putExtra("tip_tp", _tip_tp+"");
+					
+					SimpleDateFormat formatter2 = new SimpleDateFormat(
+							"yyyy-MM-dd HH:mm");
+					Date d = formatter2.parse(date + " " + time); 
+
+					PendingIntent sender = PendingIntent.getBroadcast(
+							MorePage.this, 0, intent,
+							PendingIntent.FLAG_CANCEL_CURRENT);
+					// 闹铃间隔， 这里设为1分钟闹一次，在第2步我们将每隔1分钟收到一次广播
+					am.setRepeating(AlarmManager.RTC_WAKEUP, d.getTime(), 1000
+							* 60 * 60 * 24 * 7, sender);
+				} else if ("每月".equals(tip_tp.getSelectedItem().toString())) {
+					AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+					Intent intent = new Intent("com.renjie.money");
+					intent.putExtra("time", time);
+					intent.putExtra("date", date);
+					intent.putExtra("tip_tp", _tip_tp+"");
+					intent.putExtra("tipContent", _tipContent);
+					SimpleDateFormat formatter2 = new SimpleDateFormat(
+							"yyyy-MM-dd HH:mm");
+					Date d = formatter2.parse(date + " " + time); 
+
+					PendingIntent sender = PendingIntent.getBroadcast(
+							MorePage.this, 0, intent,
+							PendingIntent.FLAG_CANCEL_CURRENT);
+					// 闹铃间隔， 这里设为1分钟闹一次，在第2步我们将每隔1分钟收到一次广播
+					am.setRepeating(AlarmManager.RTC_WAKEUP, d.getTime(), 1000
+							* 60 * 60 * 24 * 30, sender);
+				} else if ("自定义".equals(tip_tp.getSelectedItem().toString())) {
+					 
+				}
+				DbUtils db = DbUtils.create(MorePage.this);
+				db.configAllowTransaction(true);
+				Reminder r = new Reminder();
+				r.setFlg(Reminder.VALID);
+				r.setHour(_h);
+				r.setMinute(_mi);
+				r.setMonth(_m);
+				r.setContent(_tipContent);
+				r.setYear(_y);
+				r.setDay(_d);
+				r.setReminderType(_tip_tp);
+				db.save(r);
+
+				List<Reminder> list = db.findAll(Selector.from(Reminder.class)
+						.orderBy("id").limit(10));
+				if (list.size() > 0) {
+					System.out.println(list);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			showMess(R.string.save_success);
 
 			initFirstPage();
