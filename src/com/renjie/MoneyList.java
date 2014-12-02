@@ -30,7 +30,7 @@ import com.renjie.treelistview.TreeNodeInfo;
 import com.renjie.treelistview.TreeStateManager;
 
 /**
- * 显示理财信息的列表界面.
+ * 显示理财信息的列 表界面.
  * 
  * @author lsq
  * 
